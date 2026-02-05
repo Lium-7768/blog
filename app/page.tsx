@@ -1,13 +1,43 @@
 import Link from 'next/link'
-import { db } from '@/lib/supabase'
 import { format } from 'date-fns'
 
-export default async function Home() {
-  const { data: posts, error } = await db.posts.getAll()
-
-  if (error) {
-    console.error('Error fetching posts:', error)
+// 模拟数据，避免构建时出错
+const mockPosts = [
+  {
+    id: '1',
+    title: 'Welcome to My Blog',
+    slug: 'welcome',
+    excerpt: 'This is a sample blog post. Create your first post in the admin panel!',
+    created_at: new Date().toISOString(),
+    view_count: 0,
+    author: { name: 'Admin' },
+    category: { name: 'General', slug: 'general' }
   }
+]
+
+async function getPosts() {
+  try {
+    // 动态导入，避免构建时加载
+    const { getServerClient } = await import('@/lib/supabase-server')
+    const supabase = getServerClient()
+    
+    const { data: posts, error } = await supabase
+      .from('posts')
+      .select('*, category:categories(*), author:profiles(name)')
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return posts || []
+  } catch (error) {
+    console.error('Error fetching posts:', error)
+    // 返回模拟数据或空数组
+    return []
+  }
+}
+
+export default async function Home() {
+  const posts = await getPosts()
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -36,7 +66,7 @@ export default async function Home() {
         <h1 className="text-4xl font-bold text-gray-900 mb-8">Latest Posts</h1>
 
         <div className="space-y-8">
-          {posts?.map((post: any) => (
+          {posts.map((post: any) => (
             <article
               key={post.id}
               className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition"
@@ -50,7 +80,7 @@ export default async function Home() {
               <p className="text-gray-600 mb-4">{post.excerpt}</p>
 
               <div className="flex items-center text-sm text-gray-500 space-x-4">
-                <span>{post.author?.name}</span>
+                <span>{post.author?.name || 'Unknown'}</span>
                 <span>•</span>
                 <span>{format(new Date(post.created_at), 'MMM d, yyyy')}</span>
                 {post.category && (
@@ -65,7 +95,7 @@ export default async function Home() {
             </article>
           ))}
 
-          {(!posts || posts.length === 0) && (
+          {posts.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500">No posts yet. Create one in the admin panel!</p>
               <Link

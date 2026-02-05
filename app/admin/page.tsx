@@ -1,25 +1,37 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
 import { format } from 'date-fns'
 
+async function getUserPosts() {
+  try {
+    const { getServerClient } = await import('@/lib/supabase-server')
+    const supabase = getServerClient()
+    
+    const { data: { session } } = await supabase.auth.getSession()
+    
+    if (!session) {
+      return { posts: [], user: null }
+    }
+
+    const { data: posts } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('author_id', session.user.id)
+      .order('created_at', { ascending: false })
+
+    return { posts: posts || [], user: session.user }
+  } catch (error) {
+    console.error('Error fetching posts:', error)
+    return { posts: [], user: null }
+  }
+}
+
 export default async function AdminPage() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const { posts, user } = await getUserPosts()
 
-  const { data: { session } } = await supabase.auth.getSession()
-
-  if (!session) {
+  if (!user) {
     redirect('/login')
   }
-
-  const { data: posts } = await supabase
-    .from('posts')
-    .select('*')
-    .eq('author_id', session.user.id)
-    .order('created_at', { ascending: false })
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -61,7 +73,7 @@ export default async function AdminPage() {
           </div>
 
           <div className="divide-y divide-gray-200">
-            {posts?.map((post: any) => (
+            {posts.map((post: any) => (
               <div key={post.id} className="px-6 py-4 flex items-center justify-between">
                 <div>
                   <h3 className="font-medium text-gray-900">{post.title}</h3>
@@ -95,7 +107,7 @@ export default async function AdminPage() {
               </div>
             ))}
 
-            {(!posts || posts.length === 0) && (
+            {posts.length === 0 && (
               <div className="px-6 py-12 text-center text-gray-500">
                 No posts yet. Create your first post!
               </div>
