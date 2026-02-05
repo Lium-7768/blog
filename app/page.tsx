@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { format } from 'date-fns'
+import SearchBar from '@/components/SearchBar'
 
 // 模拟数据，避免构建时出错
 const mockPosts = [
@@ -63,6 +64,11 @@ export default async function Home() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-12">
+        {/* Search Section */}
+        <div className="mb-12">
+          <SearchBar />
+        </div>
+
         <h1 className="text-4xl font-bold text-gray-900 mb-8">Latest Posts</h1>
 
         <div className="space-y-8">
