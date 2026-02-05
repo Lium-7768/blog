@@ -37,19 +37,19 @@ export default async function AdminPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 py-6 flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <Link href="/" className="text-gray-600 hover:text-gray-900">
+      <header className="bg-white shadow-sm sticky top-0 z-30">
+        <div className="max-w-6xl mx-auto px-4 py-3 lg:py-6 flex justify-between items-center">
+          <div className="flex items-center space-x-2 lg:space-x-4">
+            <Link href="/" className="text-gray-600 hover:text-gray-900 text-sm lg:text-base">
               ← Home
             </Link>
-            <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+            <h1 className="text-lg lg:text-2xl font-bold">Admin Dashboard</h1>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 lg:space-x-4">
             <Link
               href="/admin/posts/new"
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              className="bg-blue-600 text-white px-3 lg:px-4 py-2 rounded-lg hover:bg-blue-700 text-sm lg:text-base whitespace-nowrap"
             >
               + New Post
             </Link>
@@ -57,7 +57,7 @@ export default async function AdminPage() {
             <form action="/logout" method="post">
               <button
                 type="submit"
-                className="text-gray-600 hover:text-gray-900"
+                className="text-gray-600 hover:text-gray-900 text-sm lg:text-base"
               >
                 Logout
               </button>
@@ -67,18 +67,18 @@ export default async function AdminPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-4 py-4 lg:py-8">
         <div className="bg-white rounded-lg shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold">Your Posts</h2>
+          <div className="px-4 lg:px-6 py-4 border-b border-gray-200">
+            <h2 className="text-base lg:text-lg font-semibold">Your Posts</h2>
           </div>
 
           <div className="divide-y divide-gray-200">
             {posts.map((post: any) => (
-              <div key={post.id} className="px-6 py-4 flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium text-gray-900">{post.title}</h3>
-                  <div className="text-sm text-gray-500 mt-1">
+              <div key={post.id} className="px-4 lg:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-medium text-gray-900 text-sm lg:text-base truncate">{post.title}</h3>
+                  <div className="text-xs lg:text-sm text-gray-500 mt-1">
                     {format(new Date(post.created_at), 'MMM d, yyyy')} • {' '}
                     <span className={
                       post.status === 'published'
@@ -90,17 +90,17 @@ export default async function AdminPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1 lg:space-x-2 flex-shrink-0">
                   <Link
                     href={`/posts/${post.slug}`}
                     target="_blank"
-                    className="text-gray-600 hover:text-gray-900 px-3 py-1"
+                    className="text-gray-600 hover:text-gray-900 px-2 lg:px-3 py-1 text-sm"
                   >
                     View
                   </Link>
                   <Link
                     href={`/admin/posts/${post.id}/edit`}
-                    className="text-blue-600 hover:text-blue-800 px-3 py-1"
+                    className="text-blue-600 hover:text-blue-800 px-2 lg:px-3 py-1 text-sm"
                   >
                     Edit
                   </Link>

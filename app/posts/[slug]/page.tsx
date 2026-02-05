@@ -47,24 +47,24 @@ export default async function PostPage({ params }: { params: { slug: string } })
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-3xl mx-auto px-4 py-6">
-          <Link href="/" className="text-blue-600 hover:underline">
+      <header className="bg-white shadow-sm sticky top-0 z-30">
+        <div className="max-w-3xl mx-auto px-4 py-3 lg:py-6">
+          <Link href="/" className="text-blue-600 hover:underline text-sm lg:text-base">
             ← Back to Home
           </Link>
         </div>
       </header>
 
       {/* Article */}
-      <article className="max-w-3xl mx-auto px-4 py-12">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{post.title}</h1>
+      <article className="max-w-3xl mx-auto px-4 py-6 lg:py-12">
+        <header className="mb-6 lg:mb-8">
+          <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 mb-3 lg:mb-4">{post.title}</h1>
 
-          <div className="flex items-center text-sm text-gray-500 space-x-4">
+          <div className="flex flex-wrap items-center text-xs lg:text-sm text-gray-500 gap-x-3 lg:gap-x-4 gap-y-1">
             <span>{post.author?.name || 'Unknown'}</span>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <span>{format(new Date(post.created_at), 'MMM d, yyyy')}</span>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <span>{post.view_count || 0} views</span>
           </div>
 
@@ -93,12 +93,12 @@ export default async function PostPage({ params }: { params: { slug: string } })
           <img
             src={post.cover_image}
             alt={post.title}
-            className="w-full h-64 object-cover rounded-lg mb-8"
+            className="w-full h-48 lg:h-64 object-cover rounded-lg mb-6 lg:mb-8"
           />
         )}
 
-        <div className="prose prose-lg max-w-none">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
+        <div className="prose prose-sm lg:prose-lg max-w-none">
+          <ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>{post.content}</ReactMarkdown>
         </div>
       </article>
     </div>

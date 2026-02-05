@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { format } from 'date-fns'
 import SearchBar from '@/components/SearchBar'
 import TagCloud from '@/components/TagCloud'
+import MobileNav from '@/components/MobileNav'
 
 // 模拟数据，避免构建时出错
 const mockPosts = [
@@ -44,54 +45,59 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-6 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-gray-900">
+      <header className="bg-white shadow-sm sticky top-0 z-30">
+        <div className="max-w-4xl mx-auto px-4 py-4 lg:py-6 flex justify-between items-center">
+          <Link href="/" className="text-xl lg:text-2xl font-bold text-gray-900">
             My Blog
           </Link>
-          <div className="space-x-4">
-            <Link href="/admin" className="text-gray-600 hover:text-gray-900">
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center space-x-4">
+            <Link href="/admin" className="text-gray-600 hover:text-gray-900 px-3 py-2">
               Admin
             </Link>
             <Link
               href="/login"
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
             >
               Login
             </Link>
-          </div>
+          </nav>
+
+          {/* Mobile Navigation */}
+          <MobileNav />
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 py-12">
+      <main className="max-w-4xl mx-auto px-4 py-6 lg:py-12">
         {/* Search Section */}
-        <div className="mb-12">
+        <div className="mb-6 lg:mb-12">
           <SearchBar />
         </div>
 
-        <h1 className="text-4xl font-bold text-gray-900 mb-8">Latest Posts</h1>
+        <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 mb-6 lg:mb-8">Latest Posts</h1>
 
         {/* Tag Cloud */}
-        <div className="mb-8">
+        <div className="mb-6 lg:mb-8">
           <TagCloud />
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-4 lg:space-y-8">
           {posts.map((post: any) => (
             <article
               key={post.id}
-              className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition"
+              className="bg-white rounded-lg shadow-sm p-4 lg:p-6 hover:shadow-md transition"
             >
               <Link href={`/posts/${post.slug}`}>
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2 hover:text-blue-600">
+                <h2 className="text-lg lg:text-2xl font-semibold text-gray-900 mb-2 hover:text-blue-600 line-clamp-2">
                   {post.title}
                 </h2>
               </Link>
 
-              <p className="text-gray-600 mb-4">{post.excerpt}</p>
+              <p className="text-gray-600 mb-4 text-sm lg:text-base line-clamp-3">{post.excerpt}</p>
 
-              <div className="flex items-center text-sm text-gray-500 space-x-4">
+              <div className="flex flex-wrap items-center text-xs lg:text-sm text-gray-500 gap-x-4 gap-y-1">
                 <span>{post.author?.name || 'Unknown'}</span>
                 <span>•</span>
                 <span>{format(new Date(post.created_at), 'MMM d, yyyy')}</span>

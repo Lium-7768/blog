@@ -44,10 +44,10 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-sm p-8 text-center">
-          <div className="text-green-600 text-5xl mb-4">✓</div>
-          <h2 className="text-2xl font-bold mb-2">Registration Successful!</h2>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-sm p-6 lg:p-8 text-center">
+          <div className="text-green-600 text-4xl lg:text-5xl mb-4">✓</div>
+          <h2 className="text-xl lg:text-2xl font-bold mb-2">Registration Successful!</h2>
           <p className="text-gray-600">Please check your email to confirm your account.</p>
         </div>
       </div>
@@ -55,9 +55,9 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-sm p-8">
-        <h1 className="text-2xl font-bold text-center mb-6">Register</h1>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-sm p-6 lg:p-8">
+        <h1 className="text-xl lg:text-2xl font-bold text-center mb-6">Register</h1>
 
         {error && (
           <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>
