@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import TagInput from '@/components/TagInput'
 
 export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -14,6 +15,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [categoryId, setCategoryId] = useState('')
   const [status, setStatus] = useState<'draft' | 'published'>('draft')
   const [categories, setCategories] = useState<any[]>([])
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
@@ -54,6 +56,17 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       setCategoryId(p.category_id || '')
       setStatus(p.status)
     }
+
+    // Load post tags
+    const { data: postTags } = await supabase
+      .from('post_tags')
+      .select('tag_id')
+      .eq('post_id', id)
+
+    if (postTags) {
+      setSelectedTags(postTags.map((pt: any) => pt.tag_id))
+    }
+
     setInitialLoading(false)
   }
 
@@ -83,6 +96,17 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       setError(error.message)
       setLoading(false)
       return
+    }
+
+    // Update tags: delete old, insert new
+    await (supabase.from('post_tags') as any).delete().eq('post_id', id)
+    
+    if (selectedTags.length > 0) {
+      const tagRelations = selectedTags.map((tagId) => ({
+        post_id: id,
+        tag_id: tagId,
+      }))
+      await (supabase.from('post_tags') as any).insert(tagRelations)
     }
 
     router.push('/admin')
@@ -196,6 +220,9 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
               <option value="published">Published</option>
             </select>
           </div>
+
+          {/* Tags */}
+          <TagInput selectedTags={selectedTags} onChange={setSelectedTags} />
 
           <div className="flex space-x-4">
             <button

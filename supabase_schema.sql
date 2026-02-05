@@ -112,6 +112,55 @@ create trigger update_posts_updated_at
   before update on posts
   for each row execute function update_updated_at_column();
 
+-- Tags table
+create table tags (
+  id uuid default gen_random_uuid() primary key,
+  name text not null unique,
+  slug text not null unique,
+  color text default '#3B82F6',
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table tags enable row level security;
+
+create policy "Tags are viewable by everyone"
+  on tags for select using (true);
+
+-- Post-Tag relationship (many-to-many)
+create table post_tags (
+  post_id uuid references posts(id) on delete cascade not null,
+  tag_id uuid references tags(id) on delete cascade not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  primary key (post_id, tag_id)
+);
+
+alter table post_tags enable row level security;
+
+create policy "Post tags are viewable by everyone"
+  on post_tags for select using (true);
+
+create policy "Authors can manage post tags"
+  on post_tags for all using (
+    exists (
+      select 1 from posts 
+      where posts.id = post_tags.post_id 
+      and posts.author_id = auth.uid()
+    )
+  );
+
+-- Function to get posts by tag
+create or replace function get_posts_by_tag(tag_slug text)
+returns setof posts as $$
+begin
+  return query
+  select p.* from posts p
+  inner join post_tags pt on p.id = pt.post_id
+  inner join tags t on pt.tag_id = t.id
+  where t.slug = tag_slug and p.status = 'published'
+  order by p.created_at desc;
+end;
+$$ language plpgsql security definer;
+
 -- Function to create profile on signup
 create or replace function public.handle_new_user()
 returns trigger as $$

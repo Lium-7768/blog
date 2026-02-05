@@ -18,10 +18,19 @@ async function getPost(slug: string) {
 
     if (error || !post) return null
 
+    // Get post tags
+    const { data: postTags } = await supabase
+      .from('post_tags')
+      .select('tag:tags(*)')
+      .eq('post_id', post.id)
+
     // Increment view count
     await supabase.rpc('increment_post_views', { post_id: post.id })
 
-    return post
+    return {
+      ...post,
+      tags: postTags?.map((pt: any) => pt.tag) || []
+    }
   } catch (error) {
     console.error('Error fetching post:', error)
     return null
@@ -59,11 +68,23 @@ export default async function PostPage({ params }: { params: { slug: string } })
             <span>{post.view_count || 0} views</span>
           </div>
 
-          {post.category && (
-            <div className="mt-4">
-              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                {post.category.name}
-              </span>
+          {(post.category || (post.tags && post.tags.length > 0)) && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {post.category && (
+                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                  {post.category.name}
+                </span>
+              )}
+              {post.tags?.map((tag: any) => (
+                <Link
+                  key={tag.id}
+                  href={`/tags/${tag.slug}`}
+                  className="px-3 py-1 rounded-full text-sm text-white hover:opacity-80 transition-opacity"
+                  style={{ backgroundColor: tag.color }}
+                >
+                  #{tag.name}
+                </Link>
+              ))}
             </div>
           )}
         </header>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import TagInput from '@/components/TagInput'
 
 export default function NewPostPage() {
   const router = useRouter()
@@ -13,6 +14,7 @@ export default function NewPostPage() {
   const [categoryId, setCategoryId] = useState('')
   const [status, setStatus] = useState<'draft' | 'published'>('draft')
   const [categories, setCategories] = useState<any[]>([])
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -59,20 +61,35 @@ export default function NewPostPage() {
       return
     }
 
-    const { error } = await db.posts.create({
-      title,
-      slug,
-      content,
-      excerpt,
-      status,
-      author_id: user.id,
-      category_id: categoryId || null,
-    })
+    // Create post
+    const { data: post, error: postError } = await (supabase
+      .from('posts') as any)
+      .insert({
+        title,
+        slug,
+        content,
+        excerpt,
+        status,
+        author_id: user.id,
+        category_id: categoryId || null,
+      })
+      .select()
+      .single()
 
-    if (error) {
-      setError(error.message)
+    if (postError) {
+      setError(postError.message)
       setLoading(false)
       return
+    }
+
+    // Add tags if any selected
+    if (selectedTags.length > 0 && post) {
+      const tagRelations = selectedTags.map((tagId) => ({
+        post_id: post.id,
+        tag_id: tagId,
+      }))
+
+      await (supabase.from('post_tags') as any).insert(tagRelations)
     }
 
     router.push('/admin')
@@ -178,6 +195,9 @@ export default function NewPostPage() {
               <option value="published">Published</option>
             </select>
           </div>
+
+          {/* Tags */}
+          <TagInput selectedTags={selectedTags} onChange={setSelectedTags} />
 
           <div className="flex space-x-4">
             <button
