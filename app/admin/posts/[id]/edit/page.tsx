@@ -3,12 +3,10 @@
 import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { getClient } from '@/lib/supabase'
 
 export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
-  const supabase = getClient()
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [content, setContent] = useState('')
@@ -21,14 +19,25 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [initialLoading, setInitialLoading] = useState(true)
 
   useEffect(() => {
-    loadCategories()
-    loadPost()
+    loadData()
   }, [id])
 
-  const loadPost = async () => {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+  const loadData = async () => {
+    // Lazy import to avoid build-time errors
+    const { getClient } = await import('@/lib/supabase')
+    const supabase = getClient()
 
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      setInitialLoading(false)
+      return
+    }
+
+    // Load categories
+    const { data: cats } = await supabase.from('categories').select('*')
+    if (cats) setCategories(cats)
+
+    // Load post
     const { data: post } = await supabase
       .from('posts')
       .select('*')
@@ -48,15 +57,14 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     setInitialLoading(false)
   }
 
-  const loadCategories = async () => {
-    const { data } = await supabase.from('categories').select('*')
-    if (data) setCategories(data)
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+
+    // Lazy import
+    const { getClient } = await import('@/lib/supabase')
+    const supabase = getClient()
 
     const { error } = await (supabase
       .from('posts') as any)

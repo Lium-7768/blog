@@ -3,11 +3,9 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { getClient, db } from '@/lib/supabase'
 
 export default function NewPostPage() {
   const router = useRouter()
-  const supabase = getClient()
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [content, setContent] = useState('')
@@ -23,6 +21,8 @@ export default function NewPostPage() {
   }, [])
 
   const loadCategories = async () => {
+    // Lazy import to avoid build-time errors
+    const { db } = await import('@/lib/supabase')
     const { data } = await db.categories.getAll()
     if (data) setCategories(data)
   }
@@ -46,6 +46,10 @@ export default function NewPostPage() {
     e.preventDefault()
     setLoading(true)
     setError('')
+
+    // Lazy import to avoid build-time errors
+    const { getClient, db } = await import('@/lib/supabase')
+    const supabase = getClient()
 
     const { data: { user } } = await supabase.auth.getUser()
 

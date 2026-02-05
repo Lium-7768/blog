@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { format } from 'date-fns'
+import DeletePostButton from '@/components/DeletePostButton'
 
 async function getUserPosts() {
   try {
@@ -103,6 +104,10 @@ export default async function AdminPage() {
                   >
                     Edit
                   </Link>
+                  <DeletePostButton 
+                    postId={post.id} 
+                    postTitle={post.title} 
+                  />
                 </div>
               </div>
             ))}

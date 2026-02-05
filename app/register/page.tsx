@@ -3,11 +3,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { getClient } from '@/lib/supabase'
 
 export default function RegisterPage() {
   const router = useRouter()
-  const supabase = getClient()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -19,6 +17,10 @@ export default function RegisterPage() {
     e.preventDefault()
     setLoading(true)
     setError('')
+
+    // Lazy import to avoid build-time errors
+    const { getClient } = await import('@/lib/supabase')
+    const supabase = getClient()
 
     const { error } = await supabase.auth.signUp({
       email,
