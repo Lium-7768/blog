@@ -3,17 +3,17 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createClientClient, db } from '@/lib/supabase'
+import { getClient, db } from '@/lib/supabase'
 
 export default function NewPostPage() {
   const router = useRouter()
-  const supabase = createClientClient()
+  const supabase = getClient()
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [content, setContent] = useState('')
   const [excerpt, setExcerpt] = useState('')
   const [categoryId, setCategoryId] = useState('')
-  const [status, setStatus] = useState('draft')
+  const [status, setStatus] = useState<'draft' | 'published'>('draft')
   const [categories, setCategories] = useState<any[]>([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -167,7 +167,7 @@ export default function NewPostPage() {
             </label>
             <select
               value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              onChange={(e) => setStatus(e.target.value as 'draft' | 'published')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="draft">Draft</option>

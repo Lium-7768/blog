@@ -1,14 +1,103 @@
+'use client'
+
 import { createClient } from '@supabase/supabase-js'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-// Server-side client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Define database types
+type Database = {
+  public: {
+    Tables: {
+      posts: {
+        Row: {
+          id: string
+          title: string
+          slug: string
+          content: string
+          excerpt: string | null
+          cover_image: string | null
+          status: 'draft' | 'published'
+          author_id: string
+          category_id: string | null
+          view_count: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          slug: string
+          content: string
+          excerpt?: string | null
+          cover_image?: string | null
+          status?: 'draft' | 'published'
+          author_id: string
+          category_id?: string | null
+          view_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          slug?: string
+          content?: string
+          excerpt?: string | null
+          cover_image?: string | null
+          status?: 'draft' | 'published'
+          author_id?: string
+          category_id?: string | null
+          view_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      categories: {
+        Row: {
+          id: string
+          name: string
+          slug: string
+          description: string | null
+          created_at: string
+        }
+      }
+      profiles: {
+        Row: {
+          id: string
+          name: string
+          avatar_url: string | null
+          role: 'user' | 'admin'
+          created_at: string
+        }
+      }
+      comments: {
+        Row: {
+          id: string
+          content: string
+          post_id: string
+          author_id: string
+          parent_id: string | null
+          status: 'pending' | 'approved' | 'spam'
+          created_at: string
+        }
+      }
+    }
+  }
+}
 
-// Client-side hook
-export const createClientClient = () => createClientComponentClient()
+// Client-side singleton
+let client: ReturnType<typeof createClient<Database>> | null = null
+
+export function getClient() {
+  if (!client) {
+    client = createClient<Database>(supabaseUrl, supabaseAnonKey)
+  }
+  return client
+}
+
+// Server-side client (for Server Components)
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
 
 // Auth helpers
 export const auth = {
@@ -60,16 +149,16 @@ export const db = {
     },
 
     create: async (post: any) => {
-      return await supabase
-        .from('posts')
+      return await (supabase
+        .from('posts') as any)
         .insert(post)
         .select()
         .single()
     },
 
     update: async (id: string, post: any) => {
-      return await supabase
-        .from('posts')
+      return await (supabase
+        .from('posts') as any)
         .update(post)
         .eq('id', id)
         .select()
@@ -81,7 +170,7 @@ export const db = {
     },
 
     incrementViews: async (id: string) => {
-      return await supabase.rpc('increment_post_views', { post_id: id })
+      return await (supabase.rpc as any)('increment_post_views', { post_id: id })
     }
   },
 
@@ -115,7 +204,7 @@ export const db = {
     },
 
     update: async (id: string, data: any) => {
-      return await supabase.from('profiles').update(data).eq('id', id)
+      return await (supabase.from('profiles') as any).update(data).eq('id', id)
     }
   }
 }

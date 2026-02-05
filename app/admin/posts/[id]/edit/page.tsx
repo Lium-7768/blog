@@ -1,44 +1,55 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createClientClient, db } from '@/lib/supabase'
+import { getClient } from '@/lib/supabase'
 
-export default function EditPostPage({ params }: { params: { id: string } }) {
+export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const router = useRouter()
-  const supabase = createClientClient()
+  const supabase = getClient()
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [content, setContent] = useState('')
   const [excerpt, setExcerpt] = useState('')
   const [categoryId, setCategoryId] = useState('')
-  const [status, setStatus] = useState('draft')
+  const [status, setStatus] = useState<'draft' | 'published'>('draft')
   const [categories, setCategories] = useState<any[]>([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
 
   useEffect(() => {
-    loadPost()
     loadCategories()
-  }, [])
+    loadPost()
+  }, [id])
 
   const loadPost = async () => {
-    const { data: post } = await db.posts.getBySlug(params.id)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const { data: post } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('id', id)
+      .eq('author_id', user.id)
+      .single()
+
     if (post) {
-      setTitle(post.title)
-      setSlug(post.slug)
-      setContent(post.content)
-      setExcerpt(post.excerpt || '')
-      setCategoryId(post.category_id || '')
-      setStatus(post.status)
+      const p = post as any
+      setTitle(p.title)
+      setSlug(p.slug)
+      setContent(p.content)
+      setExcerpt(p.excerpt || '')
+      setCategoryId(p.category_id || '')
+      setStatus(p.status)
     }
     setInitialLoading(false)
   }
 
   const loadCategories = async () => {
-    const { data } = await db.categories.getAll()
+    const { data } = await supabase.from('categories').select('*')
     if (data) setCategories(data)
   }
 
@@ -47,14 +58,18 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
     setLoading(true)
     setError('')
 
-    const { error } = await db.posts.update(params.id, {
-      title,
-      slug,
-      content,
-      excerpt,
-      status,
-      category_id: categoryId || null,
-    })
+    const { error } = await (supabase
+      .from('posts') as any)
+      .update({
+        title,
+        slug,
+        content,
+        excerpt,
+        status,
+        category_id: categoryId || null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
 
     if (error) {
       setError(error.message)
@@ -127,7 +142,7 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select category...</option>
-              {categories.map((cat) => (
+              {categories.map((cat: any) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
                 </option>
@@ -166,7 +181,7 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
             </label>
             <select
               value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              onChange={(e) => setStatus(e.target.value as 'draft' | 'published')}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="draft">Draft</option>

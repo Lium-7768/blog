@@ -3,11 +3,11 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createClientClient } from '@/lib/supabase'
+import { getClient } from '@/lib/supabase'
 
 export default function LoginPage() {
   const router = useRouter()
-  const supabase = createClientClient()
+  const supabase = getClient()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')

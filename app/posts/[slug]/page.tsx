@@ -1,19 +1,31 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { db } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 import { format } from 'date-fns'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
-  const { data: post, error } = await db.posts.getBySlug(params.slug)
+export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+  
+  const { data: post, error } = await supabase
+    .from('posts')
+    .select('*, category:categories(*), author:profiles(name)')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .single()
 
   if (!post || error) {
     notFound()
   }
 
   // Increment view count
-  await db.posts.incrementViews(post.id)
+  await supabase.rpc('increment_post_views', { post_id: post.id })
 
   return (
     <div className="min-h-screen bg-gray-50">
