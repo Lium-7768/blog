@@ -44,7 +44,7 @@ export default function DeletePostButton({ postId, postTitle }: DeletePostButton
       {/* Delete Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="text-red-600 hover:text-red-800 hover:bg-red-50 px-3 py-1 rounded transition-colors flex items-center gap-1"
+        className="text-red-600 hover:text-red-800 dark:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1 rounded transition-colors flex items-center gap-1"
         title="Delete post"
       >
         <Trash2 className="w-4 h-4" />
@@ -54,24 +54,24 @@ export default function DeletePostButton({ postId, postTitle }: DeletePostButton
       {/* Confirmation Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200 transition-colors">
             {/* Header */}
             <div className="flex items-start gap-4">
-              <div className="p-3 bg-red-100 rounded-full">
-                <AlertTriangle className="w-6 h-6 text-red-600" />
+              <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-full">
+                <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white transition-colors">
                   Delete Post
                 </h3>
-                <p className="text-gray-600 mt-2">
+                <p className="text-gray-600 dark:text-gray-300 mt-2 transition-colors">
                   Are you sure you want to delete "<span className="font-medium">{postTitle}</span>"? 
                   This action cannot be undone.
                 </p>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
                 disabled={isDeleting}
               >
                 <X className="w-5 h-5" />
@@ -80,7 +80,7 @@ export default function DeletePostButton({ postId, postTitle }: DeletePostButton
 
             {/* Error Message */}
             {error && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm transition-colors">
                 {error}
               </div>
             )}
@@ -90,7 +90,7 @@ export default function DeletePostButton({ postId, postTitle }: DeletePostButton
               <button
                 onClick={() => setIsOpen(false)}
                 disabled={isDeleting}
-                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { format } from 'date-fns'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import ThemeToggle from '@/components/ThemeToggle'
 
 async function getPost(slug: string) {
   try {
@@ -45,22 +46,23 @@ export default async function PostPage({ params }: { params: { slug: string } })
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-30">
-        <div className="max-w-3xl mx-auto px-4 py-3 lg:py-6">
-          <Link href="/" className="text-blue-600 hover:underline text-sm lg:text-base">
+      <header className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-30 transition-colors duration-200">
+        <div className="max-w-3xl mx-auto px-4 py-3 lg:py-6 flex justify-between items-center">
+          <Link href="/" className="text-blue-600 dark:text-blue-400 hover:underline text-sm lg:text-base transition-colors">
             ← Back to Home
           </Link>
+          <ThemeToggle />
         </div>
       </header>
 
       {/* Article */}
       <article className="max-w-3xl mx-auto px-4 py-6 lg:py-12">
         <header className="mb-6 lg:mb-8">
-          <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 mb-3 lg:mb-4">{post.title}</h1>
+          <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-4 transition-colors">{post.title}</h1>
 
-          <div className="flex flex-wrap items-center text-xs lg:text-sm text-gray-500 gap-x-3 lg:gap-x-4 gap-y-1">
+          <div className="flex flex-wrap items-center text-xs lg:text-sm text-gray-500 dark:text-gray-400 gap-x-3 lg:gap-x-4 gap-y-1 transition-colors">
             <span>{post.author?.name || 'Unknown'}</span>
             <span className="hidden sm:inline">•</span>
             <span>{format(new Date(post.created_at), 'MMM d, yyyy')}</span>
@@ -71,7 +73,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
           {(post.category || (post.tags && post.tags.length > 0)) && (
             <div className="mt-4 flex flex-wrap gap-2">
               {post.category && (
-                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm transition-colors">
                   {post.category.name}
                 </span>
               )}
@@ -97,7 +99,7 @@ export default async function PostPage({ params }: { params: { slug: string } })
           />
         )}
 
-        <div className="prose prose-sm lg:prose-lg max-w-none">
+        <div className="prose prose-sm lg:prose-lg max-w-none dark:prose-invert transition-colors duration-200">
           <ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>{post.content}</ReactMarkdown>
         </div>
       </article>

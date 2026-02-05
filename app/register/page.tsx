@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import ThemeToggle from '@/components/ThemeToggle'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -44,61 +45,70 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-sm p-6 lg:p-8 text-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4 py-8 transition-colors duration-200">
+        <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 lg:p-8 text-center transition-colors duration-200">
           <div className="text-green-600 text-4xl lg:text-5xl mb-4">✓</div>
-          <h2 className="text-xl lg:text-2xl font-bold mb-2">Registration Successful!</h2>
-          <p className="text-gray-600">Please check your email to confirm your account.</p>
+          <h2 className="text-xl lg:text-2xl font-bold mb-2 text-gray-900 dark:text-white transition-colors">Registration Successful!</h2>
+          <p className="text-gray-600 dark:text-gray-400 transition-colors">Please check your email to confirm your account.</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-sm p-6 lg:p-8">
-        <h1 className="text-xl lg:text-2xl font-bold text-center mb-6">Register</h1>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4 py-8 transition-colors duration-200">
+      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 lg:p-8 transition-colors duration-200">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white transition-colors">Register</h1>
+          <ThemeToggle />
+        </div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded mb-4">{error}</div>
+          <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 rounded mb-4 transition-colors">{error}</div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">
               Name
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                         focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">
               Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                         focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">
               Password
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                         focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               required
               minLength={6}
             />
@@ -107,20 +117,20 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
           >
             {loading ? 'Creating account...' : 'Register'}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
+        <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400 transition-colors">
           Already have an account?{' '}
-          <Link href="/login" className="text-blue-600 hover:underline">
+          <Link href="/login" className="text-blue-600 dark:text-blue-400 hover:underline transition-colors">
             Login
           </Link>
         </p>
 
-        <Link href="/" className="block text-center mt-4 text-sm text-gray-500 hover:text-gray-700">
+        <Link href="/" className="block text-center mt-4 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
           ← Back to Home
         </Link>
       </div>

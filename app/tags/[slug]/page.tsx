@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { notFound } from 'next/navigation'
+import ThemeToggle from '@/components/ThemeToggle'
 
 async function getTagAndPosts(slug: string) {
   try {
@@ -52,13 +53,14 @@ export default async function TagPage({ params }: { params: { slug: string } }) 
   const { tag, posts } = data
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <Link href="/" className="text-gray-600 hover:text-gray-900">
+      <header className="bg-white dark:bg-gray-800 shadow-sm transition-colors duration-200">
+        <div className="max-w-4xl mx-auto px-4 py-6 flex justify-between items-center">
+          <Link href="/" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
             ← Back to Home
           </Link>
+          <ThemeToggle />
         </div>
       </header>
 
@@ -72,7 +74,7 @@ export default async function TagPage({ params }: { params: { slug: string } }) 
           >
             #{tag.name}
           </span>
-          <p className="mt-4 text-gray-600">
+          <p className="mt-4 text-gray-600 dark:text-gray-400 transition-colors">
             {posts.length} {posts.length === 1 ? 'post' : 'posts'} tagged with #{tag.name}
           </p>
         </div>
@@ -82,24 +84,24 @@ export default async function TagPage({ params }: { params: { slug: string } }) 
           {posts.map((post: any) => (
             <article
               key={post.id}
-              className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 hover:shadow-md transition-all duration-200"
             >
               <Link href={`/posts/${post.slug}`}>
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2 hover:text-blue-600">
+                <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                   {post.title}
                 </h2>
               </Link>
 
-              <p className="text-gray-600 mb-4">{post.excerpt}</p>
+              <p className="text-gray-600 dark:text-gray-400 mb-4 transition-colors">{post.excerpt}</p>
 
-              <div className="flex items-center text-sm text-gray-500 space-x-4">
+              <div className="flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 gap-x-4 gap-y-1 transition-colors">
                 <span>{post.author?.name || 'Unknown'}</span>
                 <span>•</span>
                 <span>{format(new Date(post.created_at), 'MMM d, yyyy')}</span>
                 {post.category && (
                   <>
                     <span>•</span>
-                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                    <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs transition-colors">
                       {post.category.name}
                     </span>
                   </>
@@ -110,10 +112,10 @@ export default async function TagPage({ params }: { params: { slug: string } }) 
 
           {posts.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-500">No posts yet with this tag.</p>
+              <p className="text-gray-500 dark:text-gray-400 transition-colors">No posts yet with this tag.</p>
               <Link
                 href="/"
-                className="inline-block mt-4 text-blue-600 hover:underline"
+                className="inline-block mt-4 text-blue-600 dark:text-blue-400 hover:underline transition-colors"
               >
                 Browse all posts →
               </Link>
