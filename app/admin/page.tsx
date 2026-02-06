@@ -1,38 +1,57 @@
+'use client'
+
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import DeletePostButton from '@/components/DeletePostButton'
 import ThemeToggle from '@/components/ThemeToggle'
 
-async function getUserPosts() {
-  try {
-    const { getServerClient } = await import('@/lib/supabase-server')
-    const supabase = getServerClient()
-    
-    const { data: { session } } = await supabase.auth.getSession()
-    
-    if (!session) {
-      return { posts: [], user: null }
+export default function AdminPage() {
+  const router = useRouter()
+  const [posts, setPosts] = useState<any[]>([])
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    checkAuth()
+  }, [])
+
+  const checkAuth = async () => {
+    try {
+      const { getClient } = await import('@/lib/supabase')
+      const supabase = getClient()
+      
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        router.push('/login')
+        return
+      }
+
+      setUser(session.user)
+
+      // Fetch user's posts
+      const { data: posts } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('author_id', session.user.id)
+        .order('created_at', { ascending: false })
+
+      setPosts(posts || [])
+    } catch (error) {
+      console.error('Error:', error)
+    } finally {
+      setLoading(false)
     }
-
-    const { data: posts } = await supabase
-      .from('posts')
-      .select('*')
-      .eq('author_id', session.user.id)
-      .order('created_at', { ascending: false })
-
-    return { posts: posts || [], user: session.user }
-  } catch (error) {
-    console.error('Error fetching posts:', error)
-    return { posts: [], user: null }
   }
-}
 
-export default async function AdminPage() {
-  const { posts, user } = await getUserPosts()
-
-  if (!user) {
-    redirect('/login')
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors duration-200">
+        <div className="text-gray-600 dark:text-gray-400">Loading...</div>
+      </div>
+    )
   }
 
   return (
@@ -56,14 +75,16 @@ export default async function AdminPage() {
               + New Post
             </Link>
 
-            <form action="/logout" method="post">
-              <button
-                type="submit"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm lg:text-base transition-colors"
-              >
-                Logout
-              </button>
-            </form>
+            <button
+              onClick={async () => {
+                const { getClient } = await import('@/lib/supabase')
+                await getClient().auth.signOut()
+                router.push('/login')
+              }}
+              className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm lg:text-base transition-colors"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </header>
