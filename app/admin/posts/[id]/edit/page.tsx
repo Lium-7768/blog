@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import TagInput from '@/components/TagInput'
+import ImageUpload from '@/components/ImageUpload'
 
 export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
+  const { id } = await params
   const router = useRouter()
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
@@ -16,70 +17,91 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [status, setStatus] = useState<'draft' | 'published'>('draft')
   const [categories, setCategories] = useState<any[]>([])
   const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [coverImage, setCoverImage] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [initialLoading, setInitialLoading] = useState(true)
+  const [loadingTags, setLoadingTags] = useState(false)
 
   useEffect(() => {
-    loadData()
+    loadPostData()
   }, [id])
 
-  const loadData = async () => {
-    // Lazy import to avoid build-time errors
+  const loadPostData = async () => {
     const { getClient } = await import('@/lib/supabase')
     const supabase = getClient()
-
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      setInitialLoading(false)
-      return
-    }
-
-    // Load categories
-    const { data: cats } = await supabase.from('categories').select('*')
-    if (cats) setCategories(cats)
 
     // Load post
     const { data: post } = await supabase
       .from('posts')
       .select('*')
       .eq('id', id)
-      .eq('author_id', user.id)
       .single()
 
-    if (post) {
-      const p = post as any
-      setTitle(p.title)
-      setSlug(p.slug)
-      setContent(p.content)
-      setExcerpt(p.excerpt || '')
-      setCategoryId(p.category_id || '')
-      setStatus(p.status)
+    if (!post) {
+      setError('Post not found')
+      return
     }
+
+    setTitle(post.title)
+    setSlug(post.slug)
+    setContent(post.content)
+    setExcerpt(post.excerpt || '')
+    setCategoryId(post.category_id || '')
+    setStatus(post.status)
+    setCoverImage(post.cover_image)
+
+    // Load categories
+    const { data: cats } = await supabase
+      .from('categories')
+      .select('*')
+      .order('name')
+    if (cats) setCategories(cats)
 
     // Load post tags
     const { data: postTags } = await supabase
       .from('post_tags')
       .select('tag_id')
       .eq('post_id', id)
-
     if (postTags) {
       setSelectedTags(postTags.map((pt: any) => pt.tag_id))
     }
+  }
 
-    setInitialLoading(false)
+  const generateSlug = (text: string) => {
+    return text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .substring(0, 50)
+  }
+
+  const handleTitleChange = (value: string) => {
+    setTitle(value)
+    if (!slug) {
+      setSlug(generateSlug(value))
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setLoadingTags(true)
 
-    // Lazy import
+    // Lazy import to avoid build-time errors
     const { getClient } = await import('@/lib/supabase')
     const supabase = getClient()
 
-    const { error } = await (supabase
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      setError('Please login first')
+      setLoading(false)
+      setLoadingTags(false)
+      return
+    }
+
+    // Update post
+    const { data: post, error: updateError } = await (supabase
       .from('posts') as any)
       .update({
         title,
@@ -88,37 +110,46 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         excerpt,
         status,
         category_id: categoryId || null,
-        updated_at: new Date().toISOString()
+        cover_image: coverImage || null,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', id)
+      .select()
+      .single()
 
-    if (error) {
-      setError(error.message)
+    if (updateError) {
+      setError(updateError.message)
       setLoading(false)
+      setLoadingTags(false)
       return
     }
 
-    // Update tags: delete old, insert new
-    await (supabase.from('post_tags') as any).delete().eq('post_id', id)
-    
+    // Update tags
     if (selectedTags.length > 0) {
-      const tagRelations = selectedTags.map((tagId) => ({
-        post_id: id,
-        tag_id: tagId,
-      }))
-      await (supabase.from('post_tags') as any).insert(tagRelations)
-    }
+      // Remove old tags
+      const { error: deleteError } = await (supabase
+        .from('post_tags')
+        .delete()
+        .eq('post_id', id)
 
+      if (deleteError) {
+        console.error('Delete old tags error:', deleteError)
+        // Continue even if delete fails
+      }
+
+      // Add new tags
+      if (selectedTags.length > 0 && post) {
+        const tagRelations = selectedTags.map((tagId) => ({
+          post_id: post.id,
+          tag_id: tagId,
+        }))
+
+        await (supabase.from('post_tags') as any).insert(tagRelations)
+      }
+
+    setLoadingTags(false)
     router.push('/admin')
     router.refresh()
-  }
-
-  if (initialLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
-      </div>
-    )
   }
 
   return (
@@ -145,7 +176,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
             <input
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => handleTitleChange(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
@@ -174,7 +205,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select category...</option>
-              {categories.map((cat: any) => (
+              {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
                 </option>
@@ -221,13 +252,41 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
             </select>
           </div>
 
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Cover Image
+            </label>
+            <ImageUpload
+              onUpload={(url) => setCoverImage(url)}
+              initialUrl={coverImage}
+              type="cover"
+            />
+            {coverImage && (
+              <div className="mt-2 flex items-center gap-2">
+                <img
+                  src={coverImage}
+                  alt="Cover preview"
+                  className="w-16 h-16 object-cover rounded"
+                />
+                <button
+                  type="button"
+                  onClick={() => setCoverImage(null)}
+                  className="text-red-600 hover:text-red-800 px-3 py-1 rounded bg-red-50 hover:bg-red-100"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* Tags */}
           <TagInput selectedTags={selectedTags} onChange={setSelectedTags} />
 
           <div className="flex space-x-4">
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || loadingTags}
               className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
               {loading ? 'Saving...' : 'Save Changes'}
