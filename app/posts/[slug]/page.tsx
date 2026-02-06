@@ -4,6 +4,10 @@ import { format } from 'date-fns'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import ThemeToggle from '@/components/ThemeToggle'
+import type { Metadata } from 'next'
+
+// ISR: Revalidate every 60 seconds
+export const revalidate = 60
 
 async function getPost(slug: string) {
   try {
@@ -35,6 +39,51 @@ async function getPost(slug: string) {
   } catch (error) {
     console.error('Error fetching post:', error)
     return null
+  }
+}
+
+// Generate dynamic metadata for SEO
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const post = await getPost(params.slug)
+
+  if (!post) {
+    return {
+      title: 'Post Not Found',
+      description: 'The requested post could not be found.',
+    }
+  }
+
+  const title = post.title
+  const description = post.excerpt || post.content.slice(0, 160).replace(/[#*`]/g, '')
+  const author = post.author?.name || 'Unknown'
+  const tags = post.tags?.map((t: any) => t.name) || []
+
+  return {
+    title,
+    description,
+    authors: [{ name: author }],
+    keywords: tags,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      publishedTime: post.created_at,
+      modifiedTime: post.updated_at,
+      authors: [author],
+      tags,
+      images: post.cover_image ? [
+        {
+          url: post.cover_image,
+          alt: title,
+        }
+      ] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: post.cover_image ? [post.cover_image] : undefined,
+    },
   }
 }
 

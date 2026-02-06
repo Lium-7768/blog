@@ -4,28 +4,49 @@ import SearchBar from '@/components/SearchBar'
 import TagCloud from '@/components/TagCloud'
 import MobileNav from '@/components/MobileNav'
 import ThemeToggle from '@/components/ThemeToggle'
+import Pagination from '@/components/Pagination'
 
-async function getPosts() {
+// ISR: Revalidate every 60 seconds
+export const revalidate = 60
+
+const POSTS_PER_PAGE = 10
+
+async function getPosts(page: number = 1) {
   try {
     const { getServerClient } = await import('@/lib/supabase-server')
     const supabase = getServerClient()
     
-    const { data: posts, error } = await supabase
+    const from = (page - 1) * POSTS_PER_PAGE
+    const to = from + POSTS_PER_PAGE - 1
+    
+    // Get posts with pagination
+    const { data: posts, error, count } = await supabase
       .from('posts')
-      .select('*, category:categories(*), author:profiles(name)')
+      .select('*, category:categories(*), author:profiles(name)', { count: 'exact' })
       .eq('status', 'published')
       .order('created_at', { ascending: false })
+      .range(from, to)
 
     if (error) throw error
-    return posts || []
+    
+    return { 
+      posts: posts || [], 
+      totalCount: count || 0,
+      totalPages: Math.ceil((count || 0) / POSTS_PER_PAGE)
+    }
   } catch (error) {
     console.error('Error fetching posts:', error)
-    return []
+    return { posts: [], totalCount: 0, totalPages: 0 }
   }
 }
 
-export default async function Home() {
-  const posts = await getPosts()
+export default async function Home({ 
+  searchParams 
+}: { 
+  searchParams: { page?: string } 
+}) {
+  const currentPage = parseInt(searchParams.page || '1', 10)
+  const { posts, totalCount, totalPages } = await getPosts(currentPage)
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
@@ -65,7 +86,16 @@ export default async function Home() {
           <SearchBar />
         </div>
 
-        <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-6 lg:mb-8 transition-colors">Latest Posts</h1>
+        <div className="flex justify-between items-center mb-6 lg:mb-8">
+          <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 dark:text-white transition-colors">
+            Latest Posts
+          </h1>
+          {totalCount > 0 && (
+            <span className="text-sm text-gray-500 dark:text-gray-400 transition-colors">
+              {totalCount} posts
+            </span>
+          )}
+        </div>
 
         {/* Tag Cloud */}
         <div className="mb-6 lg:mb-8">
@@ -114,6 +144,16 @@ export default async function Home() {
             </div>
           )}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-8 lg:mt-12">
+            <Pagination 
+              currentPage={currentPage} 
+              totalPages={totalPages} 
+            />
+          </div>
+        )}
       </main>
     </div>
   )
