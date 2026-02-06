@@ -1,5 +1,3 @@
-'use client'
-
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -82,6 +80,22 @@ type Database = {
           created_at: string
         }
       }
+      tags: {
+        Row: {
+          id: string
+          name: string
+          slug: string
+          color: string
+          created_at: string
+        }
+      }
+      post_tags: {
+        Row: {
+          post_id: string
+          tag_id: string
+          created_at: string
+        }
+      }
     }
   }
 }
@@ -91,31 +105,37 @@ let client: ReturnType<typeof createClient<Database>> | null = null
 
 export function getClient() {
   if (!client) {
-    client = createClient<Database>(supabaseUrl, supabaseAnonKey)
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error('Missing Supabase environment variables')
+    }
+    client = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    })
   }
   return client
 }
 
-// Server-side client (for Server Components)
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
-
 // Auth helpers
 export const auth = {
   signUp: (email: string, password: string, name: string) =>
-    supabase.auth.signUp({
+    getClient().auth.signUp({
       email,
       password,
       options: { data: { name } }
     }),
 
   signIn: (email: string, password: string) =>
-    supabase.auth.signInWithPassword({ email, password }),
+    getClient().auth.signInWithPassword({ email, password }),
 
-  signOut: () => supabase.auth.signOut(),
+  signOut: () => getClient().auth.signOut(),
 
-  getUser: () => supabase.auth.getUser(),
+  getUser: () => getClient().auth.getUser(),
 
-  getSession: () => supabase.auth.getSession(),
+  getSession: () => getClient().auth.getSession(),
 }
 
 // Database helpers
@@ -123,7 +143,7 @@ export const db = {
   // Posts
   posts: {
     getAll: async (filters?: { category?: string; status?: string }) => {
-      let query = supabase
+      let query = getClient()
         .from('posts')
         .select('*, category:categories(*), author:profiles(name)')
         .order('created_at', { ascending: false })
@@ -141,7 +161,7 @@ export const db = {
     },
 
     getBySlug: async (slug: string) => {
-      return await supabase
+      return await getClient()
         .from('posts')
         .select('*, category:categories(*), author:profiles(name)')
         .eq('slug', slug)
@@ -149,16 +169,15 @@ export const db = {
     },
 
     create: async (post: any) => {
-      return await (supabase
-        .from('posts') as any)
+      return await getClient()
+        .from('posts')
         .insert(post)
         .select()
         .single()
     },
 
     update: async (id: string, post: any) => {
-      return await (supabase
-        .from('posts') as any)
+      return await (getClient().from('posts') as any)
         .update(post)
         .eq('id', id)
         .select()
@@ -166,25 +185,25 @@ export const db = {
     },
 
     delete: async (id: string) => {
-      return await supabase.from('posts').delete().eq('id', id)
+      return await getClient().from('posts').delete().eq('id', id)
     },
 
     incrementViews: async (id: string) => {
-      return await (supabase.rpc as any)('increment_post_views', { post_id: id })
+      return await (getClient().rpc as any)('increment_post_views', { post_id: id })
     }
   },
 
   // Categories
   categories: {
     getAll: async () => {
-      return await supabase.from('categories').select('*').order('name')
+      return await getClient().from('categories').select('*').order('name')
     }
   },
 
   // Comments
   comments: {
     getByPost: async (postId: string) => {
-      return await supabase
+      return await getClient()
         .from('comments')
         .select('*, author:profiles(name)')
         .eq('post_id', postId)
@@ -193,18 +212,18 @@ export const db = {
     },
 
     create: async (comment: any) => {
-      return await supabase.from('comments').insert(comment).select().single()
+      return await getClient().from('comments').insert(comment).select().single()
     }
   },
 
   // Profiles
   profiles: {
     getById: async (id: string) => {
-      return await supabase.from('profiles').select('*').eq('id', id).single()
+      return await getClient().from('profiles').select('*').eq('id', id).single()
     },
 
     update: async (id: string, data: any) => {
-      return await (supabase.from('profiles') as any).update(data).eq('id', id)
+      return await (getClient().from('profiles') as any).update(data).eq('id', id)
     }
   }
 }

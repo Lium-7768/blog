@@ -20,8 +20,22 @@ export default function DeletePostButton({ postId, postTitle }: DeletePostButton
     setError('')
 
     try {
+      // Get current session token
+      const { getClient } = await import('@/lib/supabase')
+      const supabase = getClient()
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session) {
+        setError('Please login first')
+        setIsDeleting(false)
+        return
+      }
+
       const response = await fetch(`/api/posts/${postId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        },
       })
 
       if (!response.ok) {

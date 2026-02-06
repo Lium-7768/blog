@@ -1,81 +1,127 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { getAdminClient } from '@/lib/supabase-admin'
+import { z } from 'zod'
 
-// GET /api/tags - List all tags with post counts
+// Validation schemas
+const createTagSchema = z.object({
+  name: z.string().min(1).max(50).trim(),
+  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional().default('#3B82F6'),
+})
+
+/**
+ * Generate URL-friendly slug from name
+ */
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special chars
+    .replace(/\s+/g, '-')     // Replace spaces with hyphens
+    .substring(0, 50)         // Limit length
+}
+
+/**
+ * GET /api/tags
+ * List all tags with post counts
+ */
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
+    const supabaseAdmin = getAdminClient()
 
     // Get all tags with post count
-    const { data: tags, error } = await supabase
+    const { data: tags, error } = await supabaseAdmin
       .from('tags')
       .select(`
-        *,
-        post_count:post_tags(count)
+        id, name, slug, color, created_at,
+        post_tags(count)
       `)
       .order('name')
 
     if (error) {
-      throw error
+      console.error('Get tags error:', error)
+      return NextResponse.json(
+        { error: 'Failed to get tags' },
+        { status: 500 }
+      )
     }
 
     // Format post_count from array to number
     const formattedTags = tags?.map((tag: any) => ({
-      ...tag,
-      post_count: tag.post_count?.[0]?.count || 0
+      id: tag.id,
+      name: tag.name,
+      slug: tag.slug,
+      color: tag.color,
+      created_at: tag.created_at,
+      post_count: tag.post_tags?.[0]?.count || 0,
     })) || []
 
     return NextResponse.json({ tags: formattedTags })
   } catch (error: any) {
     console.error('Get tags error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to get tags' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }
 }
 
-// POST /api/tags - Create new tag (admin only)
+/**
+ * POST /api/tags
+ * Create new tag (authenticated users)
+ */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
+    // 1. Verify authentication from Authorization header
+    const authHeader = request.headers.get('authorization')
+    const token = authHeader?.replace('Bearer ', '')
 
-    // Check auth
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) {
+    if (!token) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized - No token provided' },
         { status: 401 }
       )
     }
 
-    const body = await request.json()
-    const { name, color = '#3B82F6' } = body
-
-    if (!name) {
+    // 2. Validate request body
+    let body
+    try {
+      body = await request.json()
+    } catch {
       return NextResponse.json(
-        { error: 'Tag name is required' },
+        { error: 'Invalid JSON body' },
         { status: 400 }
       )
     }
 
-    // Generate slug
-    const slug = name
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .substring(0, 50)
+    const validation = createTagSchema.safeParse(body)
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          error: 'Invalid tag data',
+          details: validation.error.flatten(),
+        },
+        { status: 400 }
+      )
+    }
 
-    const { data: tag, error } = await supabase
-      .from('tags')
+    const { name, color } = validation.data
+    const slug = generateSlug(name)
+
+    // 3. Validate slug is not empty
+    if (!slug) {
+      return NextResponse.json(
+        { error: 'Invalid tag name - could not generate slug' },
+        { status: 400 }
+      )
+    }
+
+    // 4. Create tag using admin client
+    const supabaseAdmin = getAdminClient()
+
+    const { data: tag, error } = await (supabaseAdmin
+      .from('tags') as any)
       .insert({ name, slug, color })
-      .select()
+      .select('id, name, slug, color, created_at')
       .single()
 
     if (error) {
@@ -85,14 +131,18 @@ export async function POST(request: NextRequest) {
           { status: 409 }
         )
       }
-      throw error
+      console.error('Create tag error:', error)
+      return NextResponse.json(
+        { error: 'Failed to create tag' },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json({ tag }, { status: 201 })
   } catch (error: any) {
     console.error('Create tag error:', error)
     return NextResponse.json(
-      { error: error.message || 'Failed to create tag' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }
