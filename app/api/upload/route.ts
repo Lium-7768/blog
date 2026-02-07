@@ -5,8 +5,8 @@ import { z } from 'zod'
 
 // Validation schema
 const uploadSchema = z.object({
-  file: z.any({ ref: 'File is required' }),
-  type: z.enum(['cover', 'gallery'], { errorMap: { invalid_type_value: 'Type must be cover or gallery' } }),
+  file: z.any().refine((val: any) => val instanceof File, 'File is required'),
+  type: z.enum(['cover', 'gallery']),
 })
 
 // Allowed file types

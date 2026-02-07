@@ -46,10 +46,17 @@ export default function ImageUpload({ onUpload, initialUrl, initialType }: Image
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    
+
     const droppedFile = e.dataTransfer.files?.[0]
     if (droppedFile) {
-      handleFileChange({ target: { files: [droppedFile] } } as React.ChangeEvent<HTMLInputElement>)
+      setFile(droppedFile)
+      
+      // Create preview
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPreview(reader.result as string)
+      }
+      reader.readAsDataURL(droppedFile)
     }
     setDragActive(false)
   }
