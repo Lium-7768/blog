@@ -13,11 +13,12 @@ const paramsSchema = z.object({
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // 1. Validate params
-    const validation = paramsSchema.safeParse(params)
+    const resolvedParams = await params
+    const validation = paramsSchema.safeParse(resolvedParams)
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Invalid post ID', details: validation.error.flatten() },
