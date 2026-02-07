@@ -1,15 +1,44 @@
-// lib/supabase-server.ts - 用于 Server Components
-import { createClient } from '@supabase/supabase-js'
+// lib/supabase-server.ts - Server Components (SSR)
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
-// 只在运行时创建客户端，避免构建时错误
-export function getServerClient() {
+export async function getServerClient() {
+  const cookieStore = await cookies()
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseKey) {
-    // 返回模拟数据或抛出错误
     throw new Error('Missing Supabase environment variables')
   }
 
-  return createClient(supabaseUrl, supabaseKey)
+  return createServerClient(
+    supabaseUrl,
+    supabaseKey,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: any) {
+          try {
+            cookieStore.set({ name, value, ...options })
+          } catch {
+            // The `set` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing
+            // user sessions.
+          }
+        },
+        remove(name: string, options: any) {
+          try {
+            cookieStore.set({ name, value: '', ...options })
+          } catch {
+            // The `delete` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing
+            // user sessions.
+          }
+        },
+      },
+    }
+  )
 }

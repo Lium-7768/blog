@@ -14,11 +14,11 @@ const POSTS_PER_PAGE = 10
 async function getPosts(page: number = 1) {
   try {
     const { getServerClient } = await import('@/lib/supabase-server')
-    const supabase = getServerClient()
-    
+    const supabase = await getServerClient()
+
     const from = (page - 1) * POSTS_PER_PAGE
     const to = from + POSTS_PER_PAGE - 1
-    
+
     // Get posts with pagination
     const { data: posts, error, count } = await supabase
       .from('posts')

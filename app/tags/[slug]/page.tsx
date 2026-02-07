@@ -6,7 +6,7 @@ import ThemeToggle from '@/components/ThemeToggle'
 async function getTagAndPosts(slug: string) {
   try {
     const { getServerClient } = await import('@/lib/supabase-server')
-    const supabase = getServerClient()
+    const supabase = await getServerClient()
 
     // Get tag info
     const { data: tag, error: tagError } = await supabase

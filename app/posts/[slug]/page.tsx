@@ -12,8 +12,8 @@ export const revalidate = 60
 async function getPost(slug: string) {
   try {
     const { getServerClient } = await import('@/lib/supabase-server')
-    const supabase = getServerClient()
-    
+    const supabase = await getServerClient()
+
     const { data: post, error } = await supabase
       .from('posts')
       .select('*, category:categories(*), author:profiles(name)')
