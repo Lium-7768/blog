@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import './animations.css'
 import { ThemeProvider } from '@/components/ThemeProvider'
 
 export const metadata: Metadata = {

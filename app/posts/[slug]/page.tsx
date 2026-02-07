@@ -4,6 +4,8 @@ import { format } from 'date-fns'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import ThemeToggle from '@/components/ThemeToggle'
+import TableOfContents from '@/components/TableOfContents'
+import ReadingProgress from '@/components/ReadingProgress'
 import type { Metadata } from 'next'
 
 // ISR: Revalidate every 60 seconds
@@ -152,6 +154,15 @@ export default async function PostPage({ params }: { params: { slug: string } })
           <ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>{post.content}</ReactMarkdown>
         </div>
       </article>
+
+      {/* Table of Contents & Reading Progress */}
+      {post && (
+        <>
+          <TableOfContents />
+          <ReadingProgress />
+        </>
+      )}
+
     </div>
   )
 }

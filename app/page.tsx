@@ -1,10 +1,15 @@
-import Link from 'next/link'
+import { Suspense } from 'react'
+import Link from 'next/link'import Link from 'next/link'
 import { format } from 'date-fns'
 import SearchBar from '@/components/SearchBar'
 import TagCloud from '@/components/TagCloud'
 import MobileNav from '@/components/MobileNav'
+import PostSkeleton from '@/components/PostSkeleton'
+import MobileNav from '@/components/MobileNav'
 import ThemeToggle from '@/components/ThemeToggle'
 import Pagination from '@/components/Pagination'
+import { Suspense } from 'react'
+import PostSkeleton from '@/components/PostSkeleton'
 
 // ISR: Revalidate every 60 seconds
 export const revalidate = 60
