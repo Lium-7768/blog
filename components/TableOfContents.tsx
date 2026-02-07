@@ -2,22 +2,26 @@
 
 import { useState, useEffect } from 'react'
 
+type Heading = {
+  id: string
+  text: string
+  level: number
+}
+
 export default function TableOfContents() {
   const [activeId, setActiveId] = useState<string | null>(null)
-  const [headings, setHeadings] = useState<Array<{ id: string; text: string; level: number }>>([])
+  const [headings, setHeadings] = useState<Heading[]>([])
 
   useEffect(() => {
-    // 提取所有 h2 和 h3 标题
     const elements = document.querySelectorAll('article h2, article h3')
-    const headingData = Array.from(elements).map((el, index) => ({
+    const headingData = Array.from(elements).map((el, index): Heading => ({
       id: `heading-${index}`,
       text: el.textContent || '',
       level: el.tagName.toLowerCase() === 'h2' ? 2 : 3,
     }))
     setHeadings(headingData)
 
-    // 添加平滑滚动
-    const handleScroll = (e: Event) => {
+    const handleClick = (e: Event) => {
       const target = e.target as HTMLElement
       if (target instanceof HTMLElement) {
         const id = target.getAttribute('data-heading-id')
@@ -30,10 +34,10 @@ export default function TableOfContents() {
       }
     }
 
-    document.addEventListener('click', handleScroll)
+    document.addEventListener('click', handleClick)
 
     return () => {
-      document.removeEventListener('click', handleScroll)
+      document.removeEventListener('click', handleClick)
     }
   }, [])
 
@@ -49,29 +53,29 @@ export default function TableOfContents() {
         </h3>
         
         <nav className="space-y-2">
-          {headings.map((heading) => (
+          {headings.map((heading: Heading, index: number) => (
             <a
               key={heading.id}
-              href={`#heading-${heading.id}`}
+              href={`#heading-${index}`}
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                const element = document.getElementById(`heading-${heading.id}`)
+                const element = document.getElementById(`heading-${index}`)
                 if (element) {
                   element.scrollIntoView({ behavior: 'smooth', block: 'start' })
                 }
               }}
               data-heading-id={heading.id}
-              className={`
-                block px-3 py-2 rounded-lg transition-all duration-200
-                ${activeId === heading.id
+              aria-label={`Go to ${heading.text}`}
+              className={`block px-3 py-2 rounded-lg transition-all duration-200 ${
+                activeId === heading.id
                   ? 'bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-200'
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-              }
+              }`}
             >
-              <span className={`inline-block w-2 h-2 mr-2 rounded-full ${heading.level === 2 ? 'bg-blue-600' : 'bg-gray-400'}`}>
-                {heading.level === 2 ? 'H' : 'H'.concat(heading.level.toString())}
-              </span>
+              <span className={`inline-block w-2 h-2 mr-2 rounded-full ${
+                heading.level === 2 ? 'bg-blue-600' : 'bg-gray-400'
+              }`} />
               <span className="text-sm">
                 {heading.text}
               </span>
@@ -79,7 +83,6 @@ export default function TableOfContents() {
           ))}
         </nav>
 
-        {/* 移动端自动隐藏 */}
         <button
           onClick={() => setActiveId(null)}
           className="lg:hidden mt-4 text-sm text-gray-500 dark:text-gray-400 w-full text-center"
