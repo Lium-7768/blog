@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import TagInput from '@/components/TagInput'
 import ImageUpload from '@/components/ImageUpload'
+import MarkdownEditor from '@/components/MarkdownEditor'
 
 export default function EditPostContent({ id }: { id: string }) {
   const router = useRouter()

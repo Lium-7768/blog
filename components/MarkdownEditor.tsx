@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Bold, Italic, Code, Link, List, Image, Type, Eye, EyeOff, Save } from 'lucide-react'
+import { Bold, Italic, Code, Link, Save, Type, Eye, EyeOff } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
@@ -9,6 +9,7 @@ interface MarkdownEditorProps {
   initialContent?: string
   postId?: string
   onSave?: (content: string) => void
+  onPublish?: (content: string, status: 'draft' | 'published') => void
   title?: string
 }
 
@@ -16,11 +17,13 @@ export default function MarkdownEditor({
   initialContent = '',
   postId,
   onSave,
+  onPublish,
   title = 'New Post'
 }: MarkdownEditorProps) {
   const [content, setContent] = useState(initialContent)
   const [previewMode, setPreviewMode] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [isPublishing, setIsPublishing] = useState(false)
   const [lastSaved, setLastSaved] = useState(initialContent)
   const [unsavedChanges, setUnsavedChanges] = useState(false)
   const [wordCount, setWordCount] = useState(0)
@@ -45,23 +48,15 @@ export default function MarkdownEditor({
     setUnsavedChanges(content !== lastSaved)
   }, [content, lastSaved])
 
-  const insertAtCursor = (before: string, after: string) => {
-    const textarea = textareaRef.current
-    if (!textarea) return
+  useEffect(() => {
+    const saveInterval = setInterval(async () => {
+      if (content && content !== lastSaved) {
+        await saveDraft()
+      }
+    }, 30000)
 
-    const start = textarea.selectionStart
-    const end = textarea.selectionEnd
-    const selectedText = content.substring(start, end)
-    const newValue = content.substring(0, start) + before + selectedText + after + content.substring(end)
-    setContent(newValue)
-    
-    setTimeout(() => {
-      textarea.focus()
-      const newStart = start + before.length
-      const newEnd = newStart + before.length + selectedText.length + after.length
-      textarea.setSelectionRange(newStart, newEnd)
-    }, 0)
-  }
+    return () => clearInterval(saveInterval)
+  }, [content, lastSaved])
 
   const saveDraft = async () => {
     if (!content || content === lastSaved) return
@@ -69,13 +64,11 @@ export default function MarkdownEditor({
     setIsSaving(true)
 
     try {
-      // Save to localStorage immediately
       const draftKey = postId ? `draft_${postId}` : 'draft_new'
       localStorage.setItem(draftKey, content)
       setLastSaved(content)
       setUnsavedChanges(false)
 
-      // If postId exists, save to database via API
       if (postId && postId !== 'new') {
         const response = await fetch(`/api/posts/${postId}`, {
           method: 'PATCH',
@@ -106,6 +99,61 @@ export default function MarkdownEditor({
     }
   }
 
+  const publishPost = async () => {
+    if (!content || content.trim() === '') {
+      alert('Content cannot be empty')
+      return
+    }
+
+    setIsPublishing(true)
+
+    try {
+      const status = postId ? 'published' : 'published'
+      
+      if (onPublish) {
+        await onPublish(content, status)
+      } else if (onSave) {
+        await onSave(content)
+      }
+
+      // Clear draft
+      if (postId) {
+        localStorage.removeItem(`draft_${postId}`)
+      } else {
+        localStorage.removeItem('draft_new')
+      }
+
+      setLastSaved(content)
+      setUnsavedChanges(false)
+      
+      alert('Post published successfully!')
+    } catch (error) {
+      console.error('Publish error:', error)
+      alert('Failed to publish post. Please try again.')
+    } finally {
+      setIsPublishing(false)
+    }
+  }
+
+  const insertAtCursor = (before: string, after: string) => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const selectedText = content.substring(start, end)
+    const newValue = content.substring(0, start) + before + selectedText + after + content.substring(end)
+
+    setContent(newValue)
+    
+    setTimeout(() => {
+      textarea.focus()
+      const newStart = start + before.length
+      const newEnd = newStart + before.length + selectedText.length + after.length
+      textarea.setSelectionRange(newStart, newEnd)
+    }, 0)
+  }
+
   return (
     <div className="w-full h-screen flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       {/* Toolbar */}
@@ -116,23 +164,48 @@ export default function MarkdownEditor({
               {title}
             </h1>
 
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center gap-2">
               {/* Save Status */}
-              {isSaving ? (
-                <div className="flex items-center space-x-2 text-sm text-blue-600 dark:text-blue-400">
+              {isSaving && (
+                <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
                   <Save className="w-4 h-4 animate-spin" aria-hidden="true" />
                   <span>Saving...</span>
                 </div>
-              ) : unsavedChanges ? (
-                <div className="flex items-center space-x-2 text-sm text-orange-600 dark:text-orange-400">
+              )}
+              {unsavedChanges && !isSaving && !isPublishing && (
+                <div className="flex items-center gap-2 text-sm text-orange-600 dark:text-orange-400">
                   <Save className="w-4 h-4" aria-hidden="true" />
                   <span>Unsaved</span>
                 </div>
-              ) : (
-                <div className="flex items-center space-x-2 text-sm text-green-600 dark:text-green-400">
+              )}
+              {!unsavedChanges && lastSaved && !isSaving && !isPublishing && (
+                <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
                   <Save className="w-4 h-4" aria-hidden="true" />
                   <span>Saved</span>
                 </div>
+              )}
+
+              {/* Publish Button */}
+              {onPublish && (
+                <button
+                  onClick={publishPost}
+                  type="button"
+                  disabled={isPublishing || !content.trim()}
+                  aria-label="Publish post"
+                  className="px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 disabled:bg-gray-400 dark:disabled:bg-gray-700 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-2"
+                >
+                  {isPublishing ? (
+                    <>
+                      <Type />
+                      <span>Publishing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Type />
+                      <span>Publish</span>
+                    </>
+                  )}
+                </button>
               )}
 
               {/* Save Button */}
@@ -161,10 +234,10 @@ export default function MarkdownEditor({
           {/* Formatting Toolbar */}
           <div className="py-2 flex flex-wrap items-center gap-2 border-t border-gray-100 dark:border-gray-700">
             <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-              Formatting:
+              Text:
             </span>
 
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={() => insertAtCursor('**', '**')}
@@ -212,7 +285,7 @@ export default function MarkdownEditor({
                 className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 title="Image"
               >
-                <Image className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
+                <Link className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -221,10 +294,10 @@ export default function MarkdownEditor({
 
           <div className="py-2 flex flex-wrap items-center gap-2 border-t border-gray-100 dark:border-gray-700">
             <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-              Structure:
+              Block:
             </span>
 
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={() => insertAtCursor('## ', '')}
@@ -232,7 +305,7 @@ export default function MarkdownEditor({
                 className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 title="Heading"
               >
-                <Type className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
+                <Code className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
               </button>
 
               <button
@@ -242,7 +315,7 @@ export default function MarkdownEditor({
                 className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 title="Quote"
               >
-                <Type className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
+                <Code className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
               </button>
 
               <button
@@ -252,7 +325,7 @@ export default function MarkdownEditor({
                 className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 title="Bullet List"
               >
-                <List className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
+                <Code className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
               </button>
 
               <button
@@ -262,7 +335,7 @@ export default function MarkdownEditor({
                 className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 title="Numbered List"
               >
-                <List className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
+                <Code className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -289,7 +362,7 @@ export default function MarkdownEditor({
                 {previewMode ? (
                   <Eye className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
                 ) : (
-                  <EyeOff className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
+                  <Save className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
                 )}
               </button>
             </div>
@@ -301,7 +374,7 @@ export default function MarkdownEditor({
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Write your content in Markdown..."
-              className="flex-1 w-full px-4 py-3 resize-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-mono text-sm leading-relaxed focus:outline-none transition-colors"
+              className="flex-1 w-full px-4 py-3 bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-mono text-sm leading-relaxed resize-none focus:outline-none transition-colors"
               spellCheck={false}
               autoFocus
             />
@@ -309,17 +382,17 @@ export default function MarkdownEditor({
             {/* Editor Footer */}
             <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
               <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center gap-4">
                   <span>{wordCount} words</span>
                   <span>{charCount} characters</span>
                   <span>~{readTime} read</span>
                 </div>
 
-                <div className="flex items-center space-x-2">
-                  {unsavedChanges && (
+                <div className="flex items-center gap-2">
+                  {unsavedChanges && !isSaving && !isPublishing && (
                     <span className="text-orange-600 dark:text-orange-400">Unsaved</span>
                   )}
-                  {!unsavedChanges && lastSaved && (
+                  {!unsavedChanges && lastSaved && !isSaving && !isPublishing && (
                     <span className="text-green-600 dark:text-green-400">Saved</span>
                   )}
                 </div>
@@ -344,9 +417,9 @@ export default function MarkdownEditor({
                 className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 {previewMode ? (
-                  <Eye className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
+                  <Save className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
                 ) : (
-                  <EyeOff className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
+                  <Eye className="w-4 h-4 text-gray-700 dark:text-gray-300" aria-hidden="true" />
                 )}
               </button>
             </div>
@@ -354,7 +427,7 @@ export default function MarkdownEditor({
             {/* Preview Content */}
             <div className="flex-1 overflow-y-auto">
               <div className="max-w-4xl mx-auto px-4 py-6 lg:py-8">
-                <div className="prose prose-sm lg:prose-lg max-w-none dark:prose-invert bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 lg:p-8 min-h-full transition-colors">
+                <div className="prose prose-sm lg:prose-lg max-w-none dark:prose-invert bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 lg:p-8 transition-colors">
                   {content ? (
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
