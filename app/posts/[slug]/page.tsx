@@ -6,6 +6,8 @@ import remarkGfm from 'remark-gfm'
 import ThemeToggle from '@/components/ThemeToggle'
 import TableOfContents from '@/components/TableOfContents'
 import ReadingProgress from '@/components/ReadingProgress'
+import CommentForm from '@/components/CommentForm'
+import CommentList from '@/components/CommentList'
 import type { Metadata } from 'next'
 
 // ISR: Revalidate every 60 seconds
@@ -163,6 +165,15 @@ export default async function PostPage({ params }: { params: { slug: string } })
         </>
       )}
 
+      {/* Comments Section */}
+      <div className="mt-8 lg:mt-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 lg:p-8 transition-colors duration-200">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+          评论区 ({post.id})
+        </h2>
+        
+        <CommentForm postId={post.id} onCommentAdded={() => {}} />
+        <CommentList postId={post.id} />
+      </div>
     </div>
   )
 }

@@ -7,7 +7,7 @@ interface SocialShareProps {
   title: string
   url: string
   description?: string
-  tags?: string[]
+  tags?: Array<{ name: string }>
 }
 
 export default function SocialShare({
