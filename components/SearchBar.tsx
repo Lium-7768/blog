@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Search, X, Loader2, ChevronDown } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import SearchHistory from '@/components/SearchHistory'
 
 interface SearchResult {
   id: string
@@ -23,8 +24,7 @@ export default function SearchBar() {
   const [isOpen, setIsOpen] = useState(false)
   const [focusedIndex, setFocusedIndex] = useState(-1)
   const [hasSearched, setHasSearched] = useState(false)
-
-  const searchContainerRef = useRef<HTMLUListElement>(null)
+  const [showHistory, setShowHistory] = useState(false)
 
   // Debounced search with 300ms delay
   const debouncedSearch = useCallback(
@@ -32,20 +32,22 @@ export default function SearchBar() {
       if (!searchQuery.trim()) {
         setResults([])
         setHasSearched(false)
+        setShowHistory(true)
         return
       }
 
       setIsLoading(true)
       setHasSearched(true)
+      setShowHistory(false)
 
       try {
-        const response = await fetch(
-          `/api/posts/search?q=${encodeURIComponent(searchQuery)}`
-        )
+        const response = await fetch(`/api/posts/search?q=${encodeURIComponent(searchQuery)}&limit=8`)
         const data = await response.json()
-        
+
         if (data.posts) {
           setResults(data.posts)
+        } else {
+          setResults([])
         }
       } catch (error) {
         console.error('Search error:', error)
@@ -54,35 +56,35 @@ export default function SearchBar() {
         setIsLoading(false)
       }
     },
-    [query, searchContainerRef]
+    []
   )
 
+  // Search when query changes
   useEffect(() => {
     const timer = setTimeout(() => {
-      debouncedSearch(query)
+      if (query) {
+        debouncedSearch(query)
+      }
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [query, searchContainerRef])
+  }, [query, debouncedSearch])
 
-  // Keyboard navigation
+  // Keyboard navigation for search results
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return
-      
+      if (!isOpen || results.length === 0) return
+
       switch (e.key) {
-        case 'Escape':
-          setIsOpen(false)
-          break
         case 'ArrowDown':
           e.preventDefault()
-          setFocusedIndex(prev => 
+          setFocusedIndex(prev =>
             prev < results.length - 1 ? prev + 1 : prev
           )
           break
         case 'ArrowUp':
           e.preventDefault()
-          setFocusedIndex(prev => 
+          setFocusedIndex(prev =>
             prev > 0 ? prev - 1 : prev
           )
           break
@@ -111,7 +113,22 @@ export default function SearchBar() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value)
-    if (!isOpen) setIsOpen(true)
+    setIsOpen(true)
+    if (!isOpen) {
+      setIsOpen(true)
+    }
+  }
+
+  const handleHistorySelect = (historyQuery: string) => {
+    setQuery(historyQuery)
+    setIsOpen(true)
+    setShowHistory(false)
+    setHasSearched(false)
+    debouncedSearch(historyQuery)
+  }
+
+  const handleHistoryClear = () => {
+    setShowHistory(false)
   }
 
   const handleClear = () => {
@@ -119,6 +136,7 @@ export default function SearchBar() {
     setResults([])
     setHasSearched(false)
     setIsOpen(false)
+    setShowHistory(true)
   }
 
   const handleResultClick = (slug: string) => {
@@ -133,7 +151,7 @@ export default function SearchBar() {
     const parts = text.split(regex)
     return parts.map((part, i) =>
       part.toLowerCase() === query.toLowerCase() ? (
-        <mark key={i} className="bg-yellow-200 text-yellow-900 px-0.5 rounded transition-colors">
+        <mark key={i} className="bg-yellow-200 dark:bg-yellow-900 text-yellow-900 dark:text-yellow-100 px-0.5 rounded transition-colors">
           {part}
         </mark>
       ) : (
@@ -147,215 +165,168 @@ export default function SearchBar() {
   }
 
   return (
-    <div 
+    <div
       className="relative w-full max-w-md"
       role="search"
       aria-label="Search posts"
     >
       {/* Search Input - Accessible Form Control */}
       <div className="relative">
-        <label 
+        <label
           htmlFor="search-input"
           className="sr-only"
         >
-          Search posts by title or content
+          Search posts...
         </label>
-        
-        <div className="absolute inset-y-0 left-0 pl-10 flex items-center pointer-events-none">
-          <Search 
-            className="h-5 w-5 text-gray-400 dark:text-gray-500 transition-colors"
-            aria-hidden="true"
-          />
-        </div>
+
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500 pointer-events-none" aria-hidden="true" />
 
         <input
           id="search-input"
           type="text"
           value={query}
           onChange={handleInputChange}
-          onFocus={() => setIsOpen(true)}
-          placeholder="Search posts... (Ctrl+K)"
-          autoComplete="off"
-          className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
-                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 
-                     focus:border-transparent transition-all duration-200
-                     placeholder:text-gray-400 dark:placeholder:text-gray-500"
+          placeholder="Search posts..."
+          className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 transition-all duration-200"
+          aria-expanded={isOpen}
+          aria-controls="search-results-list"
+          aria-haspopup="listbox"
+          aria-label="Search posts"
         />
-        
+
         {query && (
           <button
             onClick={handleClear}
             type="button"
             aria-label="Clear search"
-            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
-            <X className="h-4 w-4" aria-hidden="true" />
+            <X className="w-3 h-3 text-gray-400 dark:text-gray-500" aria-hidden="true" />
           </button>
+        )}
+
+        {isLoading && (
+          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-blue-600 dark:text-blue-400 animate-spin" aria-hidden="true" />
         )}
       </div>
 
-      {/* Dropdown Results - Accessible List */}
-      {(isOpen || hasSearched) && (
-        <>
-          {/* Backdrop for mobile */}
-          <div
-            className="fixed inset-0 bg-black/20 z-40 lg:hidden"
-            onClick={() => setIsOpen(false)}
-            aria-label="Close search results"
-          />
+      {/* Search History */}
+      {isOpen && showHistory && (
+        <SearchHistory
+          onHistorySelect={handleHistorySelect}
+          onClearHistory={handleHistoryClear}
+          currentQuery={query}
+        />
+      )}
 
-          <div 
-            className="absolute top-full left-0 right-0 mt-2 w-full max-w-md max-h-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden transition-colors duration-200"
-            role="listbox"
-            aria-label={`Search results: ${results.length} items found`}
-            aria-orientation="vertical"
-          >
-            {/* Header */}
-            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white" id="search-results-heading">
-                  {isLoading ? (
-                    <>Searching&hellip;</>
-                  ) : results.length > 0 ? (
-                    `${results.length} results found`
-                  ) : (
-                    'No results found'
-                  )}
-                </h3>
-                
-                {/* Close button */}
-                <button
-                  onClick={() => setIsOpen(false)}
-                  type="button"
-                  className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
-                  aria-label="Close search results"
-                >
-                  <X className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </div>
+      {/* Search Results Dropdown */}
+      {isOpen && !showHistory && (
+        <div
+          id="search-results-list"
+          role="listbox"
+          aria-label="Search results"
+          className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden z-50"
+        >
+          {isLoading ? (
+            <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+              <Loader2 className="w-4 h-4 animate-spin mx-auto mb-2" aria-hidden="true" />
+              <p className="text-sm">Searching...</p>
             </div>
-
-            {/* Results List with Keyboard Navigation */}
-            <ul 
-              ref={searchContainerRef}
-              role="listbox"
-              aria-labelledby="search-results-heading"
-              className="py-2 max-h-[calc(96-2rem)] overflow-y-auto"
+          ) : results.length === 0 && hasSearched ? (
+            <div
+              className="p-4 text-center text-gray-500 dark:text-gray-400"
+              role="status"
+              aria-live="polite"
             >
-              {isLoading ? (
-                <li className="px-4 py-6 text-center text-gray-500 dark:text-gray-400" role="status">
-                  <div className="flex items-center justify-center gap-2">
-                    <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
-                    <span className="text-sm">Searching...</span>
-                  </div>
-                </li>
-              ) : results.length > 0 ? (
-                results.map((post, index) => (
-                  <li
-                    key={post.id}
-                    role="option"
-                    aria-selected={focusedIndex === index ? 'true' : 'false'}
-                    aria-label={getResultAriaLabel(post, index)}
-                    onClick={() => handleResultClick(post.slug)}
-                    tabIndex={focusedIndex === index ? 0 : -1}
-                    className={`
-                      px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer
-                      border-b border-gray-100 dark:border-gray-700 last:border-0
-                      transition-all duration-150
-                      ${focusedIndex === index 
-                        ? 'bg-blue-50 dark:bg-blue-900/20' 
-                        : ''
-                      }
-                    `}
-                  >
-                    <div className="flex items-start gap-3">
-                      {/* Cover Image Thumbnail */}
-                      {post.cover_image && (
-                        <img
-                          src={post.cover_image}
-                          alt={`Cover image for: ${post.title}`}
-                          className="w-16 h-12 object-cover rounded flex-shrink-0"
-                          loading="lazy"
-                        />
-                      )}
-                      
-                      <div className="flex-1 min-w-0">
-                        <h4 
-                          className="text-base font-medium text-gray-900 dark:text-white line-clamp-1 transition-colors"
-                        >
-                          {highlightText(post.title, query)}
-                        </h4>
-                        
-                        {post.excerpt && (
-                          <p 
-                            className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2 transition-colors"
-                          >
-                            {highlightText(post.excerpt, query)}
-                          </p>
-                        )}
-                        
-                        <div className="flex items-center gap-2 mt-2 text-xs text-gray-500 dark:text-gray-400">
-                          <span>{post.author?.name || 'Unknown'}</span>
-                          <span>•</span>
-                          <span>
-                            {new Date(post.created_at).toLocaleDateString()}
-                          </span>
-                          {post.category && (
-                            <>
-                              <span>•</span>
-                              <span 
-                                className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full transition-colors"
-                              >
-                                {post.category.name}
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                ))
-              ) : (
-                <li 
-                  className="px-4 py-6 text-center"
-                  role="status"
-                  aria-live="polite"
-                >
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {hasSearched ? (
-                      <>
-                        No results found for &quot;{query}&quot;
-                        <br />
-                        <span className="text-xs">Try different keywords</span>
-                      </>
-                    ) : (
-                      'Type to search...'
-                    )}
-                  </p>
-                  {hasSearched && (
-                    <button
-                      onClick={() => setQuery('')}
-                      className="mt-3 text-sm text-blue-600 dark:text-blue-400 hover:underline transition-colors"
-                    >
-                      Start typing to search
-                    </button>
-                  )}
-                </li>
-              )}
-            </ul>
-
-            {/* Footer with accessibility info */}
-            <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750 text-xs text-gray-500 dark:text-gray-400">
-              <div className="flex items-center justify-between">
-                <span>Keyboard: ↑↓ Navigate • Enter: Select • Esc: Close</span>
-                <span className="text-gray-400 dark:text-gray-500">
-                  {results.length} items
-                </span>
-              </div>
+              <p className="text-sm">No results found</p>
             </div>
-          </div>
-        </>
+          ) : results.length > 0 ? (
+            <ul
+              className="max-h-96 overflow-y-auto"
+              role="list"
+              aria-activedescendant={focusedIndex >= 0 ? `search-result-${focusedIndex}` : undefined}
+            >
+              {results.map((post, index) => (
+                <li
+                  key={post.id}
+                  id={`search-result-${index}`}
+                  role="option"
+                  aria-selected={focusedIndex === index}
+                  aria-label={getResultAriaLabel(post, index)}
+                  onClick={() => handleResultClick(post.slug)}
+                  onMouseMove={() => setFocusedIndex(index)}
+                  className={`flex items-start gap-3 p-3 border-b border-gray-100 dark:border-gray-700 cursor-pointer transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-900 ${
+                    focusedIndex === index ? 'bg-blue-50 dark:bg-blue-900/20' : ''
+                  }`}
+                >
+                  {/* Cover Image Thumbnail */}
+                  {post.cover_image && (
+                    <div className="flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700">
+                      <img
+                        src={post.cover_image}
+                        alt={`Cover for ${post.title}`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    {/* Category Badge */}
+                    {post.category && (
+                      <span className="mb-1 inline-block">
+                        <span className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-medium px-2 py-0.5 rounded-full transition-colors">
+                          {post.category.name}
+                        </span>
+                      </span>
+                    )}
+
+                    {/* Title */}
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-1 line-clamp-2 transition-colors">
+                      {highlightText(post.title, query)}
+                    </h4>
+
+                    {/* Excerpt */}
+                    {post.excerpt && (
+                      <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 transition-colors">
+                        {post.excerpt}
+                      </p>
+                    )}
+
+                    {/* Meta */}
+                    <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {post.author && (
+                        <span>by {post.author.name}</span>
+                      )}
+                      <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+
+                  {/* Chevron Icon */}
+                  <ChevronDown className="flex-shrink-0 w-4 h-4 text-gray-400 dark:text-gray-500" aria-hidden="true" />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div
+              className="p-4 text-center text-gray-400 dark:text-gray-600"
+              role="status"
+              aria-live="polite"
+            >
+              <p className="text-sm">Start typing to search...</p>
+            </div>
+          )}
+
+          {/* Footer */}
+          {results.length > 0 && (
+            <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/20">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {results.length} result{results.length === 1 ? '' : 's'} • Press <kbd className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded font-mono text-xs">Enter</kbd> to open
+              </p>
+            </div>
+          )}
+        </div>
       )}
     </div>
   )
