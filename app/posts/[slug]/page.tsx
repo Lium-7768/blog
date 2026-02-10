@@ -5,12 +5,13 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import ThemeToggle from '@/components/ThemeToggle'
 import TableOfContents from '@/components/TableOfContents'
+import RelatedPosts from '@/components/RelatedPosts'
 import ReadingProgress from '@/components/ReadingProgress'
 import CommentForm from '@/components/CommentForm'
 import CommentList from '@/components/CommentList'
+import SocialShare from '@/components/SocialShare'
 import type { Metadata } from 'next'
 
-// ISR: Revalidate every 60 seconds
 export const revalidate = 60
 
 async function getPost(slug: string) {
@@ -27,13 +28,11 @@ async function getPost(slug: string) {
 
     if (error || !post) return null
 
-    // Get post tags
     const { data: postTags } = await supabase
       .from('post_tags')
       .select('tag:tags(*)')
       .eq('post_id', post.id)
 
-    // Increment view count
     await supabase.rpc('increment_post_views', { post_id: post.id })
 
     return {
@@ -46,7 +45,6 @@ async function getPost(slug: string) {
   }
 }
 
-// Generate dynamic metadata for SEO
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const post = await getPost(params.slug)
 
@@ -58,7 +56,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 
   const title = post.title
-  const description = post.excerpt || post.content.slice(0, 160).replace(/[#*`]/g, '')
+  const description = post.excerpt || post.content.slice(0, 160).replace(/[#*]/g, '')
   const author = post.author?.name || 'Unknown'
   const tags = post.tags?.map((t: any) => t.name) || []
 
@@ -78,20 +76,22 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       images: post.cover_image ? [
         {
           url: post.cover_image,
-          alt: title,
-        }
-      ] : undefined,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ] : [],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: post.cover_image ? [post.cover_image] : undefined,
+      images: post.cover_image ? [post.cover_image] : [],
     },
   }
 }
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
+export default async function PostDetailPage({ params }: { params: { slug: string } }) {
   const post = await getPost(params.slug)
 
   if (!post) {
@@ -100,79 +100,114 @@ export default async function PostPage({ params }: { params: { slug: string } })
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-30 transition-colors duration-200">
-        <div className="max-w-3xl mx-auto px-4 py-3 lg:py-6 flex justify-between items-center">
-          <Link href="/" className="text-blue-600 dark:text-blue-400 hover:underline text-sm lg:text-base transition-colors">
-            ← Back to Home
-          </Link>
-          <ThemeToggle />
+      <header className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-50 transition-colors duration-200">
+        <div className="max-w-4xl mx-auto px-4 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center space-x-4">
+              <Link href="/" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+                ← Back to Home
+              </Link>
+              <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">
+                {post.title}
+              </h1>
+            </div>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
-      {/* Article */}
-      <article className="max-w-3xl mx-auto px-4 py-6 lg:py-12">
-        <header className="mb-6 lg:mb-8">
-          <h1 className="text-2xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3 lg:mb-4 transition-colors">{post.title}</h1>
+      <div className="max-w-4xl mx-auto px-4 lg:px-8 py-8">
+        <article className="bg-white dark:bg-gray-800 rounded-lg shadow-sm transition-colors duration-200">
+          <header className="px-6 lg:px-8 pb-4 lg:pb-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h2 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  {post.title}
+                </h2>
 
-          <div className="flex flex-wrap items-center text-xs lg:text-sm text-gray-500 dark:text-gray-400 gap-x-3 lg:gap-x-4 gap-y-1 transition-colors">
-            <span>{post.author?.name || 'Unknown'}</span>
-            <span className="hidden sm:inline">•</span>
-            <span>{format(new Date(post.created_at), 'MMM d, yyyy')}</span>
-            <span className="hidden sm:inline">•</span>
-            <span>{post.view_count || 0} views</span>
-          </div>
+                <div className="flex items-center space-x-2 mb-3">
+                  {post.category && (
+                    <Link
+                      href={`/tags/${post.category.slug}`}
+                      className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-medium px-3 py-1 rounded-full transition-colors"
+                    >
+                      #{post.category.name}
+                    </Link>
+                  )}
 
-          {(post.category || (post.tags && post.tags.length > 0)) && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {post.category && (
-                <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm transition-colors">
-                  {post.category.name}
-                </span>
-              )}
-              {post.tags?.map((tag: any) => (
-                <Link
-                  key={tag.id}
-                  href={`/tags/${tag.slug}`}
-                  className="px-3 py-1 rounded-full text-sm text-white hover:opacity-80 transition-opacity"
-                  style={{ backgroundColor: tag.color }}
-                >
-                  #{tag.name}
-                </Link>
-              ))}
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="flex items-center space-x-2">
+                      {post.tags.slice(0, 5).map((tag: any) => (
+                        <Link
+                          key={tag.id}
+                          href={`/tags/${tag.slug}`}
+                          className="text-xs text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                        >
+                          #{tag.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-4">
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  by {post.author?.name || 'Unknown'}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                  <span className="mx-2">•</span>
+                  <span>{format(new Date(post.created_at), 'PPP')}</span>
+                </div>
+              </div>
             </div>
-          )}
-        </header>
 
-        {post.cover_image && (
-          <img
-            src={post.cover_image}
-            alt={post.title}
-            className="w-full h-48 lg:h-64 object-cover rounded-lg mb-6 lg:mb-8"
-          />
+            {post.excerpt && (
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                {post.excerpt}
+              </p>
+            )}
+          </header>
+
+          {post.cover_image && (
+            <img
+              src={post.cover_image}
+              alt={post.title}
+              className="w-full h-48 lg:h-64 object-cover rounded-lg mb-6 lg:mb-8"
+            />
+          )}
+
+          <div className="prose prose-sm lg:prose-lg max-w-none dark:prose-invert transition-colors duration-200">
+            <ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>{post.content}</ReactMarkdown>
+          </div>
+        </article>
+
+        <TableOfContents />
+        <ReadingProgress />
+        <SocialShare
+          title={post.title}
+          url={`/posts/${post.slug}`}
+          description={post.excerpt || post.content.slice(0, 160)}
+          tags={post.tags}
+        />
+        {post && (
+          <div className="mb-8 lg:mb-12">
+            <RelatedPosts
+              currentPostId={post.id}
+              currentPostTags={post.tags}
+            />
+          </div>
         )}
 
-        <div className="prose prose-sm lg:prose-lg max-w-none dark:prose-invert transition-colors duration-200">
-          <ReactMarkdown remarkPlugins={[remarkGfm]} skipHtml>{post.content}</ReactMarkdown>
+        <div className="mt-8 lg:mt-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 lg:p-8 transition-colors duration-200">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            评论区 ({post.id})
+          </h2>
+          
+          <CommentForm postId={post.id} onCommentAdded={() => {}} />
+          <CommentList postId={post.id} />
         </div>
-      </article>
-
-      {/* Table of Contents & Reading Progress */}
-      {post && (
-        <>
-          <TableOfContents />
-          <ReadingProgress />
-        </>
-      )}
-
-      {/* Comments Section */}
-      <div className="mt-8 lg:mt-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 lg:p-8 transition-colors duration-200">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-          评论区 ({post.id})
-        </h2>
-        
-        <CommentForm postId={post.id} onCommentAdded={() => {}} />
-        <CommentList postId={post.id} />
       </div>
     </div>
   )
