@@ -5,7 +5,6 @@ A simple static blog powered by GitHub Pages.
 ## Domain
 
 - **GitHub Pages:** https://lium-7768.github.io/blog/
-- **js.org Domain:** https://liuem-blog.js.org (pending approval)
 
 ## Structure
 
