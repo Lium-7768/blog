@@ -1,52 +1,30 @@
-# Blog - Next.js + Supabase
+# Blog
 
-A modern blog built with Next.js and Supabase.
+A simple static blog powered by GitHub Pages.
 
-## Features
+## Domain
 
-- ⚡ Next.js App Router
-- 💾 Supabase Database & Auth
-- 🎨 Tailwind CSS
-- 🚀 Deployed on Vercel
+- **GitHub Pages:** https://lium-7768.github.io/blog/
+- **js.org Domain:** https://liuem-blog.js.org (pending approval)
 
-## Getting Started
+## Structure
 
-### 1. Create Supabase Project
-
-1. Go to [supabase.com](https://supabase.com)
-2. Create a new project
-3. Copy the project URL and anon key
-
-### 2. Setup Environment Variables
-
-```bash
-cp .env.example .env.local
+```
+blog/
+├── index.html    # Main blog page
+├── CNAME         # Domain configuration for js.org
+├── .nojekyll     # Disable Jekyll processing
+└── README.md     # This file
 ```
 
-Add your Supabase credentials:
-```
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-```
+## Deployment
 
-### 3. Run Locally
+The blog is automatically deployed via GitHub Pages when you push to the `main` branch.
 
-```bash
-npm install
-npm run dev
-```
+## Adding Content
 
-### 4. Deploy to Vercel
+Edit `index.html` to add or modify blog posts.
 
-```bash
-vercel
-```
+## License
 
-Or deploy via [Vercel Dashboard](https://vercel.com/new).
-
-## Tech Stack
-
-- **Framework:** [Next.js](https://nextjs.org/)
-- **Database:** [Supabase](https://supabase.com/)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **Deployment:** [Vercel](https://vercel.com/)
+MIT

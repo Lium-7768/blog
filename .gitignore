@@ -1,34 +1,23 @@
-# Dependencies
-/node_modules
-/.pnp
-.pnp.js
-
-# Testing
-/coverage
-
-# Next.js
-/.next/
-/out/
-
-# Production
-/build
-
-# Misc
+# macOS
 .DS_Store
-*.pem
+.AppleDouble
+.LSOverride
 
-# Debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Thumbnails
+._*
 
-# Local env files
-.env*.local
-.env
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
 
-# Vercel
-.vercel
-
-# TypeScript
-*.tsbuildinfo
-next-env.d.ts
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
