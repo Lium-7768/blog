@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="博客文章归档">
+  <title>文章归档 - Lium 的博客</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .archive-section {
+      margin-bottom: 40px;
+    }
+    .archive-year {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--accent);
+    }
+    .archive-item {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.3s;
+    }
+    .archive-item:hover {
+      background: var(--bg-secondary);
+    }
+    .archive-date {
+      flex-shrink: 0;
+      width: 100px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .archive-title {
+      flex: 1;
+    }
+    .archive-title a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 1.05rem;
+    }
+    .archive-title a:hover {
+      color: var(--accent);
+    }
+    .archive-tag {
+      padding: 4px 10px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin-left: 12px;
+    }
+    .tag-filter {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    .tag-filter-btn {
+      padding: 8px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+    .tag-filter-btn:hover, .tag-filter-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <a href="index.html" class="logo">
+          <span class="logo-icon">L</span>
+          Lium 的博客
+        </a>
+        <nav>
+          <a href="index.html">首页</a>
+          <a href="archive.html" class="active">归档</a>
+          <a href="about.html">关于</a>
+          <a href="https://github.com/Lium-7768" target="_blank">GitHub</a>
+        </nav>
+        <button class="theme-toggle" id="themeToggle">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container post-page">
+    <a href="index.html" class="back-btn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      返回首页
+    </a>
+
+    <article class="post-header">
+      <h1 class="post-title">文章归档</h1>
+      <p class="post-excerpt">所有文章的完整列表，共 6 篇</p>
+    </article>
+
+    <div style="margin-bottom: 32px;">
+      <h3 style="margin-bottom: 16px;">按标签筛选</h3>
+      <div class="tag-filter">
+        <button class="tag-filter-btn active" data-tag="all">全部</button>
+        <button class="tag-filter-btn" data-tag="技术">技术</button>
+        <button class="tag-filter-btn" data-tag="笔记">笔记</button>
+        <button class="tag-filter-btn" data-tag="生活">生活</button>
+        <button class="tag-filter-btn" data-tag="工具">工具</button>
+      </div>
+    </div>
+
+    <div class="archive-section">
+      <h2 class="archive-year">2026</h2>
+
+      <div class="archive-item" data-tags="技术">
+        <span class="archive-date">03-06</span>
+        <span class="archive-title">
+          <a href="posts/hello-world.html">Hello World</a>
+          <span class="archive-tag">技术</span>
+        </span>
+      </div>
+
+      <div class="archive-item" data-tags="笔记">
+        <span class="archive-date">02-20</span>
+        <span class="archive-title">
+          <a href="posts/javascript-closures.html">学习笔记：JavaScript 闭包</a>
+          <span class="archive-tag">笔记</span>
+        </span>
+      </div>
+
+      <div class="archive-item" data-tags="生活">
+        <span class="archive-date">02-15</span>
+        <span class="archive-title">
+          <a href="posts/a-day-in-life.html">程序员的一天</a>
+          <span class="archive-tag">生活</span>
+        </span>
+      </div>
+
+      <div class="archive-item" data-tags="技术">
+        <span class="archive-date">02-10</span>
+        <span class="archive-title">
+          <a href="posts/async-await.html">深入理解 async/await</a>
+          <span class="archive-tag">技术</span>
+        </span>
+      </div>
+
+      <div class="archive-item" data-tags="工具">
+        <span class="archive-date">02-05</span>
+        <span class="archive-title">
+          <a href="posts/vscode-tips.html">VS Code 高效使用技巧</a>
+          <span class="archive-tag">工具</span>
+        </span>
+      </div>
+
+      <div class="archive-item" data-tags="技术">
+        <span class="archive-date">01-28</span>
+        <span class="archive-title">
+          <a href="posts/git-best-practices.html">Git 最佳实践指南</a>
+          <span class="archive-tag">技术</span>
+        </span>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="index.html">首页</a>
+          <a href="archive.html">归档</a>
+          <a href="about.html">关于</a>
+        </div>
+        <p class="footer-copyright">&copy; 2026 Lium. Built with ❤️ and GitHub Pages.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Tag filter functionality
+    const filterBtns = document.querySelectorAll('.tag-filter-btn');
+    const archiveItems = document.querySelectorAll('.archive-item');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update active state
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Filter items
+        const tag = btn.dataset.tag;
+        archiveItems.forEach(item => {
+          if (tag === 'all' || item.dataset.tags.includes(tag)) {
+            item.style.display = 'flex';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VS Code 高效使用技巧 - Lium 的博客</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <a href="../index.html" class="logo">
+          <span class="logo-icon">L</span>
+          Lium 的博客
+        </a>
+        <nav>
+          <a href="../index.html">首页</a>
+          <a href="../archive.html">归档</a>
+          <a href="../about.html">关于</a>
+          <a href="https://github.com/Lium-7768" target="_blank">GitHub</a>
+        </nav>
+        <button class="theme-toggle" id="themeToggle">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container post-page">
+    <a href="../index.html" class="back-btn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      返回首页
+    </a>
+
+    <article class="post-header">
+      <div class="post-meta">
+        <span class="badge">工具</span>
+        <span class="date">2026年2月5日</span>
+      </div>
+      <h1 class="post-title">VS Code 高效使用技巧</h1>
+      <p class="post-excerpt">分享一些提升开发效率的 VS Code 使用技巧和插件推荐。</p>
+    </article>
+
+    <div class="post-content">
+      <h2>必备快捷键</h2>
+
+      <h3>导航</h3>
+      <ul>
+        <li><code>Cmd + P</code> - 快速打开文件</li>
+        <li><code>Cmd + Shift + P</code> - 命令面板</li>
+        <li><code>Cmd + B</code> - 切换侧边栏</li>
+        <li><code>Cmd + \`</code> - 切换终端</li>
+        <li><code>Ctrl + -</code> - 后退</li>
+        <li><code>Ctrl + Shift + -</code> - 前进</li>
+      </ul>
+
+      <h3>编辑</h3>
+      <ul>
+        <li><code>Option + ↑/↓</code> - 移动行</li>
+        <li><code>Option + Shift + ↑/↓</code> - 复制行</li>
+        <li><code>Cmd + /</code> - 切换注释</li>
+        <li><code>Cmd + D</code> - 选择下一个相同的词</li>
+        <li><code>Cmd + Shift + K</code> - 删除行</li>
+      </ul>
+
+      <h2>推荐插件</h2>
+
+      <h3>开发效率</h3>
+      <ul>
+        <li><strong>GitHub Copilot</strong> - AI 代码助手</li>
+        <li><strong>ESLint</strong> - 代码检查</li>
+        <li><strong>Prettier</strong> - 代码格式化</li>
+        <li><strong>Auto Rename Tag</strong> - 自动重命名标签</li>
+        <li><strong>Bracket Pair Colorizer</strong> - 括号配对着色</li>
+      </ul>
+
+      <h3>美化</h3>
+      <ul>
+        <li><strong>Material Icon Theme</strong> - 文件图标</li>
+        <li><strong>One Dark Pro</strong> - 主题</li>
+        <li><strong>Fira Code</strong> - 连字字体</li>
+      </ul>
+
+      <h2>高级技巧</h2>
+
+      <h3>多光标编辑</h3>
+      <p>按住 <code>Option</code> 点击多个位置，或使用 <code>Cmd + D</code> 逐步选择相同的词。</p>
+
+      <h3>代码片段</h3>
+      <pre><code>// 创建自定义代码片段
+"React Component": {
+  "prefix": "rc",
+  "body": [
+    "import React from 'react';",
+    "",
+    "const ${1:ComponentName} = () => {",
+    "  return (",
+    "    <div>$0</div>",
+    "  );",
+    "};",
+    "",
+    "export default ${1:ComponentName};"
+  ],
+  "description": "Create React component"
+}</code></pre>
+
+      <h3>工作区设置</h3>
+      <p>在项目根目录创建 <code>.vscode/settings.json</code>，可以为项目设置专属配置：</p>
+
+      <pre><code>{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
+}</code></pre>
+
+      <h2>总结</h2>
+      <p>掌握这些技巧和插件，可以让你的开发效率大幅提升。建议花时间配置适合自己的开发环境，磨刀不误砍柴工。</p>
+    </div>
+
+    <nav class="post-nav">
+      <a href="async-await.html" class="prev">
+        <div class="post-nav-label">← 上一篇</div>
+        <div class="post-nav-title">深入理解 async/await</div>
+      </a>
+      <a href="git-best-practices.html" class="next">
+        <div class="post-nav-label">下一篇 →</div>
+        <div class="post-nav-title">Git 最佳实践指南</div>
+      </a>
+    </nav>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="../index.html">首页</a>
+          <a href="../archive.html">归档</a>
+          <a href="../about.html">关于</a>
+        </div>
+        <p class="footer-copyright">&copy; 2026 Lium.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

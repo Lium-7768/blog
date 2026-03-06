@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>深入理解 async/await - Lium 的博客</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <a href="../index.html" class="logo">
+          <span class="logo-icon">L</span>
+          Lium 的博客
+        </a>
+        <nav>
+          <a href="../index.html">首页</a>
+          <a href="../archive.html">归档</a>
+          <a href="../about.html">关于</a>
+          <a href="https://github.com/Lium-7768" target="_blank">GitHub</a>
+        </nav>
+        <button class="theme-toggle" id="themeToggle">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container post-page">
+    <a href="../index.html" class="back-btn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      返回首页
+    </a>
+
+    <article class="post-header">
+      <div class="post-meta">
+        <span class="badge">技术</span>
+        <span class="date">2026年2月10日</span>
+      </div>
+      <h1 class="post-title">深入理解 async/await</h1>
+      <p class="post-excerpt">从 Promise 到 async/await，JavaScript 异步编程的演进之路。</p>
+    </article>
+
+    <div class="post-content">
+      <h2>异步编程的演进</h2>
+      <p>JavaScript 的异步编程经历了几个阶段的演进：</p>
+
+      <h3>回调函数时代</h3>
+      <pre><code>// 获取用户信息，然后获取订单
+getUser(function(user) {
+  getOrders(user.id, function(orders) {
+    console.log(orders);
+  });
+});</code></pre>
+
+      <p>问题：回调地狱，代码难以维护。</p>
+
+      <h3>Promise 时代</h3>
+      <pre><code>getUser()
+  .then(user => getOrders(user.id))
+  .then(orders => console.log(orders))
+  .catch(err => console.error(err));</code></pre>
+
+      <p>问题：链式调用虽然改善了回调地狱，但仍然不够直观。</p>
+
+      <h3>async/await 时代</h3>
+      <pre><code>async function fetchUserOrders() {
+  try {
+    const user = await getUser();
+    const orders = await getOrders(user.id);
+    console.log(orders);
+  } catch (err) {
+    console.error(err);
+  }
+}</code></pre>
+
+      <p>async/await 让异步代码看起来像同步代码，更加直观易读。</p>
+
+      <h2>async/await 基础</h2>
+
+      <h3>async 函数</h3>
+      <p>async 函数总是返回一个 Promise：</p>
+
+      <pre><code>async function foo() {
+  return 'hello';
+}
+
+foo().then(console.log); // 'hello'
+
+// 等价于
+function foo() {
+  return Promise.resolve('hello');
+}</code></pre>
+
+      <h3>await 表达式</h3>
+      <p>await 会暂停函数执行，等待 Promise 解决：</p>
+
+      <pre><code>async function example() {
+  const result = await Promise.resolve('done');
+  console.log(result); // 'done'
+}</code></pre>
+
+      <h2>常见用法</h2>
+
+      <h3>顺序执行</h3>
+      <pre><code>async function sequential() {
+  const a = await Promise.resolve(1);
+  const b = await Promise.resolve(2);
+  const c = await Promise.resolve(3);
+  return a + b + c; // 6
+}</code></pre>
+
+      <h3>并行执行</h3>
+      <pre><code>async function parallel() {
+  const [a, b, c] = await Promise.all([
+    Promise.resolve(1),
+    Promise.resolve(2),
+    Promise.resolve(3)
+  ]);
+  return a + b + c; // 6
+}</code></pre>
+
+      <h3>错误处理</h3>
+      <pre><code>async functionWithErrorHandling() {
+  try {
+    const result = await riskyOperation();
+    return result;
+  } catch (error) {
+    console.error('出错了:', error);
+    // 可以选择：
+    // 1. 返回默认值
+    return null;
+    // 2. 抛出新错误
+    throw new Error('处理失败');
+    // 3. 返回错误信息
+    return { error: true, message: error.message };
+  }
+}</code></pre>
+
+      <h2>最佳实践</h2>
+
+      <ol>
+        <li><strong>始终使用 try/catch</strong>：处理可能的错误</li>
+        <li><strong>善用 Promise.all</strong>：并行执行独立的异步操作</li>
+        <li><strong>避免过度 await</strong>：不需要等待的就不要 await</li>
+        <li><strong>循环中使用 Promise.all</strong>：而不是 for 循环加 await</li>
+      </ol>
+
+      <pre><code>// 不推荐
+for (const item of items) {
+  await processItem(item);
+}
+
+// 推荐
+await Promise.all(items.map(item => processItem(item)));</code></pre>
+
+      <h2>总结</h2>
+      <p>async/await 是 JavaScript 异步编程的重大改进，它让异步代码更加简洁易读。掌握 async/await 是每个前端开发者的必备技能。</p>
+    </div>
+
+    <nav class="post-nav">
+      <a href="a-day-in-life.html" class="prev">
+        <div class="post-nav-label">← 上一篇</div>
+        <div class="post-nav-title">程序员的一天</div>
+      </a>
+      <a href="vscode-tips.html" class="next">
+        <div class="post-nav-label">下一篇 →</div>
+        <div class="post-nav-title">VS Code 高效使用技巧</div>
+      </a>
+    </nav>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="../index.html">首页</a>
+          <a href="../archive.html">归档</a>
+          <a href="../about.html">关于</a>
+        </div>
+        <p class="footer-copyright">&copy; 2026 Lium.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

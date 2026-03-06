@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Git 最佳实践指南 - Lium 的博客</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <a href="../index.html" class="logo">
+          <span class="logo-icon">L</span>
+          Lium 的博客
+        </a>
+        <nav>
+          <a href="../index.html">首页</a>
+          <a href="../archive.html">归档</a>
+          <a href="../about.html">关于</a>
+          <a href="https://github.com/Lium-7768" target="_blank">GitHub</a>
+        </nav>
+        <button class="theme-toggle" id="themeToggle">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container post-page">
+    <a href="../index.html" class="back-btn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      返回首页
+    </a>
+
+    <article class="post-header">
+      <div class="post-meta">
+        <span class="badge">技术</span>
+        <span class="date">2026年1月28日</span>
+      </div>
+      <h1 class="post-title">Git 最佳实践指南</h1>
+      <p class="post-excerpt">日常开发中 Git 的最佳实践，包括提交规范、分支管理等。</p>
+    </article>
+
+    <div class="post-content">
+      <h2>提交信息规范</h2>
+
+      <p>使用清晰的提交信息可以让团队协作更顺畅。推荐使用 Conventional Commits 规范：</p>
+
+      <pre><code>&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;
+
+// 类型
+feat: 新功能
+fix: 修复 bug
+docs: 文档更新
+style: 代码格式（不影响功能）
+refactor: 重构
+test: 测试相关
+chore: 构建/工具相关
+
+// 示例
+feat(auth): add user login feature
+fix(api): handle null response in getUser
+docs(readme): update installation instructions</code></pre>
+
+      <h2>分支管理</h2>
+
+      <h3>Git Flow 工作流</h3>
+      <ul>
+        <li><code>main/master</code> - 生产环境分支</li>
+        <li><code>develop</code> - 开发分支</li>
+        <li><code>feature/*</code> - 功能分支</li>
+        <li><code>release/*</code> - 发布分支</li>
+        <li><code>hotfix/*</code> - 紧急修复分支</li>
+      </ul>
+
+      <h3>简化版工作流</h3>
+      <p>对于小团队，可以使用简化版：</p>
+      <ul>
+        <li><code>main</code> - 主分支，保持稳定</li>
+        <li><code>feature/*</code> - 功能分支，从 main 分支创建</li>
+        <li>完成后通过 PR 合并到 main</li>
+      </ul>
+
+      <h2>常用命令</h2>
+
+      <h3>日常操作</h3>
+      <pre><code># 拉取最新代码
+git pull --rebase
+
+# 查看状态
+git status
+
+# 暂存所有更改
+git add .
+git add -A
+
+# 提交
+git commit -m "feat: add new feature"
+
+# 推送
+git push
+git push -u origin feature-branch</code></pre>
+
+      <h3>撤销操作</h3>
+      <pre><code># 撤销工作区的更改
+git restore file.js
+git checkout -- file.js  # 旧版本
+
+# 撤销暂存的更改
+git restore --staged file.js
+git reset HEAD file.js  # 旧版本
+
+# 撤销最后一次提交（保留更改）
+git reset --soft HEAD~1
+
+# 撤销最后一次提交（丢弃更改）
+git reset --hard HEAD~1</code></pre>
+
+      <h2>.gitignore 配置</h2>
+
+      <pre><code># 依赖
+node_modules/
+__pycache__/
+
+# 环境变量
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# 构建产物
+dist/
+build/
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db</code></pre>
+
+      <h2>安全最佳实践</h2>
+
+      <ul>
+        <li>不要提交敏感信息（密钥、密码等）</li>
+        <li>使用 <code>git-secrets</code> 或 <code>truffleHog</code> 扫描</li>
+        <li>定期审查提交历史</li>
+        <li>使用 signed commits 验证身份</li>
+      </ul>
+
+      <h2>总结</h2>
+      <p>良好的 Git 实践可以提高团队协作效率，减少问题。建议：</p>
+      <ul>
+        <li>制定团队的 Git 规范并遵守</li>
+        <li>使用 PR 进行代码审查</li>
+        <li>定期拉取最新代码，减少冲突</li>
+        <li>写清楚提交信息和 PR 描述</li>
+      </ul>
+    </div>
+
+    <nav class="post-nav">
+      <a href="vscode-tips.html" class="prev">
+        <div class="post-nav-label">← 上一篇</div>
+        <div class="post-nav-title">VS Code 高效使用技巧</div>
+      </a>
+      <a href="#" class="next">
+        <div class="post-nav-label">下一篇 →</div>
+        <div class="post-nav-title">没有更多文章了</div>
+      </a>
+    </nav>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="../index.html">首页</a>
+          <a href="../archive.html">归档</a>
+          <a href="../about.html">关于</a>
+        </div>
+        <p class="footer-copyright">&copy; 2026 Lium.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
