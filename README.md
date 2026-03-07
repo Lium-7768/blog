@@ -13,6 +13,7 @@
 
 ## 🌐 访问地址
 
+- **自定义域名:** https://lium.is-a.dev
 - **GitHub Pages:** https://lium-7768.github.io/blog/
 
 ## 📁 项目结构
