@@ -595,3 +595,263 @@ footer {
 .post-card:nth-child(2) { animation-delay: 0.1s; }
 .post-card:nth-child(3) { animation-delay: 0.2s; }
 .post-card:nth-child(4) { animation-delay: 0.3s; }
+
+/* ==================== 可访问性增强 ==================== */
+
+/* Skip Link */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.skip-link:focus {
+  position: fixed;
+  left: 16px;
+  top: 16px;
+  width: auto;
+  height: auto;
+  padding: 12px 20px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  z-index: 1000;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* 键盘焦点样式 */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* 锚点滚动边距 */
+section[id] {
+  scroll-margin-top: 88px;
+}
+
+/* ==================== 导航增强 ==================== */
+
+.nav-list {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-list li {
+  margin: 0;
+}
+
+.nav-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+}
+
+.nav-toggle:hover {
+  background: var(--border-color);
+}
+
+.nav-toggle-bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text-primary);
+  transition: transform .2s ease, opacity .2s ease;
+}
+
+/* 主题按钮增大触控区域 */
+.theme-toggle {
+  width: 44px;
+  height: 44px;
+}
+
+/* ==================== 卡片交互增强 ==================== */
+
+.post-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease;
+  overflow: hidden;
+  contain: content;
+}
+
+.post-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  padding: 24px;
+}
+
+.post-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+}
+
+.post-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.post-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+}
+
+.post-excerpt {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+
+/* ==================== 响应式改进 ==================== */
+
+.posts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .posts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .posts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==================== 移动端导航折叠 ==================== */
+
+@media (max-width: 768px) {
+  nav {
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    transform: translateY(-120%);
+    transition: transform .2s ease;
+    z-index: 99;
+  }
+  
+  nav.open {
+    transform: translateY(0);
+  }
+  
+  .nav-list {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px 20px;
+    gap: 0;
+  }
+  
+  .nav-list li {
+    width: 100%;
+  }
+  
+  .nav-list a {
+    display: block;
+    padding: 12px 0;
+    width: 100%;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .nav-list li:last-child a {
+    border-bottom: none;
+  }
+  
+  .nav-toggle {
+    display: flex;
+  }
+  
+  .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+  
+  .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+}
+
+/* ==================== 减少动态效果 ==================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .post-card {
+    animation: none !important;
+  }
+}
+
+/* ==================== 标题平衡 ==================== */
+
+.hero h1 {
+  text-wrap: balance;
+}
+
+/* ==================== 按钮焦点 ==================== */
+
+.btn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ==================== Hero 区域分隔 ==================== */
+
+.hero {
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* ==================== Logo 改进 ==================== */
+
+.logo-text {
+  font-weight: 700;
+}
+
+/* 隐藏多余 logo 文字（如果只显示图标时） */
+@media (max-width: 480px) {
+  .logo-text {
+    display: none;
+  }
+}

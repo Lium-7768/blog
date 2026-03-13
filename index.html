@@ -4,29 +4,70 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="分享技术、生活与思考的个人博客">
+  <meta name="theme-color" content="#ffffff" id="themeColor">
+  <link rel="canonical" href="https://lium.is-a.dev/">
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Lium 的博客">
+  <meta property="og:description" content="分享技术、生活与思考的个人博客">
+  <meta property="og:url" content="https://lium.is-a.dev/">
+  <meta property="og:site_name" content="Lium 的博客">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Lium 的博客">
+  <meta name="twitter:description" content="分享编程技术、学习笔记与生活感悟的地方。">
+  
   <title>Lium 的博客</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "Lium 的博客",
+    "url": "https://lium.is-a.dev/",
+    "description": "分享技术、生活与思考的个人博客",
+    "inLanguage": "zh-CN"
+  }
+  </script>
 </head>
 <body>
+  <!-- Skip Link -->
+  <a href="#main" class="skip-link">跳到主要内容</a>
+  
   <header>
     <div class="container">
       <div class="header-inner">
-        <a href="index.html" class="logo">
-          <span class="logo-icon">L</span>
-          Lium 的博客
+        <a href="index.html" class="logo" aria-label="返回首页">
+          <span class="logo-icon" aria-hidden="true">L</span>
+          <span class="logo-text">Lium 的博客</span>
         </a>
-        <nav>
-          <a href="index.html" class="active">首页</a>
-          <a href="#posts">文章</a>
-          <a href="#about">关于</a>
-          <a href="archive.html">归档</a>
-          <a href="https://github.com/Lium-7768" target="_blank">GitHub</a>
+        
+        <button class="nav-toggle" id="navToggle" aria-label="打开主导航" aria-expanded="false" aria-controls="primaryNav">
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+        </button>
+        
+        <nav id="primaryNav" aria-label="主导航">
+          <ul class="nav-list">
+            <li><a href="index.html" aria-current="page">首页</a></li>
+            <li><a href="#posts">文章</a></li>
+            <li><a href="#about">关于</a></li>
+            <li><a href="archive.html">归档</a></li>
+            <li><a href="https://github.com/Lium-7768" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+          </ul>
         </nav>
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-          <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题" aria-pressed="false">
+          <svg class="sun-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
           </svg>
         </button>
@@ -34,21 +75,21 @@
     </div>
   </header>
 
-  <main>
+  <main id="main">
     <section class="hero">
       <div class="container">
         <h1>欢迎来到我的博客</h1>
         <p>分享编程技术、学习笔记与生活感悟的地方。在这里，我记录成长路上的每一个瞬间。</p>
         <div class="hero-links">
           <a href="#posts" class="btn btn-primary">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
             </svg>
             浏览文章
           </a>
           <a href="about.html" class="btn btn-secondary">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
             </svg>
             关于我
@@ -61,83 +102,95 @@
       <div class="container">
         <h2 class="section-title">最新文章</h2>
         <div class="posts-grid">
-          <a href="posts/hello-world.html" class="post-card">
-            <div class="post-card-header">
-              <span class="post-badge">技术</span>
-              <span class="post-date">2026-03-06</span>
-            </div>
-            <h3>Hello World</h3>
-            <p>欢迎来到我的新博客！这是第一篇文章，介绍了博客的建立过程和一些想法。</p>
-            <div class="tags">
-              <span class="tag">#博客</span>
-              <span class="tag">#开始</span>
-            </div>
-          </a>
+          <article class="post-card">
+            <a href="posts/hello-world.html" class="post-card-link">
+              <header class="post-card-header">
+                <span class="post-badge" aria-label="分类：技术">技术</span>
+                <time class="post-date" datetime="2026-03-06">2026-03-06</time>
+              </header>
+              <h3>Hello World</h3>
+              <p>欢迎来到我的新博客！这是第一篇文章，介绍了博客的建立过程和一些想法。</p>
+              <div class="tags">
+                <span class="tag">#博客</span>
+                <span class="tag">#开始</span>
+              </div>
+            </a>
+          </article>
 
-          <a href="posts/javascript-closures.html" class="post-card">
-            <div class="post-card-header">
-              <span class="post-badge">笔记</span>
-              <span class="post-date">2026-02-20</span>
-            </div>
-            <h3>学习笔记：JavaScript 闭包</h3>
-            <p>深入理解 JavaScript 闭包的概念、应用场景以及常见的陷阱。</p>
-            <div class="tags">
-              <span class="tag">#JavaScript</span>
-              <span class="tag">#前端</span>
-            </div>
-          </a>
+          <article class="post-card">
+            <a href="posts/javascript-closures.html" class="post-card-link">
+              <header class="post-card-header">
+                <span class="post-badge" aria-label="分类：笔记">笔记</span>
+                <time class="post-date" datetime="2026-02-20">2026-02-20</time>
+              </header>
+              <h3>学习笔记：JavaScript 闭包</h3>
+              <p>深入理解 JavaScript 闭包的概念、应用场景以及常见的陷阱。</p>
+              <div class="tags">
+                <span class="tag">#JavaScript</span>
+                <span class="tag">#前端</span>
+              </div>
+            </a>
+          </article>
 
-          <a href="posts/a-day-in-life.html" class="post-card">
-            <div class="post-card-header">
-              <span class="post-badge">生活</span>
-              <span class="post-date">2026-02-15</span>
-            </div>
-            <h3>程序员的一天</h3>
-            <p>记录一个程序员典型的一天，包括工作、学习和生活。</p>
-            <div class="tags">
-              <span class="tag">#生活</span>
-              <span class="tag">#记录</span>
-            </div>
-          </a>
+          <article class="post-card">
+            <a href="posts/a-day-in-life.html" class="post-card-link">
+              <header class="post-card-header">
+                <span class="post-badge" aria-label="分类：生活">生活</span>
+                <time class="post-date" datetime="2026-02-15">2026-02-15</time>
+              </header>
+              <h3>程序员的一天</h3>
+              <p>记录一个程序员典型的一天，包括工作、学习和生活。</p>
+              <div class="tags">
+                <span class="tag">#生活</span>
+                <span class="tag">#记录</span>
+              </div>
+            </a>
+          </article>
 
-          <a href="posts/async-await.html" class="post-card">
-            <div class="post-card-header">
-              <span class="post-badge">技术</span>
-              <span class="post-date">2026-02-10</span>
-            </div>
-            <h3>深入理解 async/await</h3>
-            <p>从 Promise 到 async/await，JavaScript 异步编程的演进之路。</p>
-            <div class="tags">
-              <span class="tag">#JavaScript</span>
-              <span class="tag">#异步</span>
-            </div>
-          </a>
+          <article class="post-card">
+            <a href="posts/async-await.html" class="post-card-link">
+              <header class="post-card-header">
+                <span class="post-badge" aria-label="分类：技术">技术</span>
+                <time class="post-date" datetime="2026-02-10">2026-02-10</time>
+              </header>
+              <h3>深入理解 async/await</h3>
+              <p>从 Promise 到 async/await，JavaScript 异步编程的演进之路。</p>
+              <div class="tags">
+                <span class="tag">#JavaScript</span>
+                <span class="tag">#异步</span>
+              </div>
+            </a>
+          </article>
 
-          <a href="posts/vscode-tips.html" class="post-card">
-            <div class="post-card-header">
-              <span class="post-badge">工具</span>
-              <span class="post-date">2026-02-05</span>
-            </div>
-            <h3>VS Code 高效使用技巧</h3>
-            <p>分享一些提升开发效率的 VS Code 使用技巧和插件推荐。</p>
-            <div class="tags">
-              <span class="tag">#VSCode</span>
-              <span class="tag">#效率</span>
-            </div>
-          </a>
+          <article class="post-card">
+            <a href="posts/vscode-tips.html" class="post-card-link">
+              <header class="post-card-header">
+                <span class="post-badge" aria-label="分类：工具">工具</span>
+                <time class="post-date" datetime="2026-02-05">2026-02-05</time>
+              </header>
+              <h3>VS Code 高效使用技巧</h3>
+              <p>分享一些提升开发效率的 VS Code 使用技巧和插件推荐。</p>
+              <div class="tags">
+                <span class="tag">#VSCode</span>
+                <span class="tag">#效率</span>
+              </div>
+            </a>
+          </article>
 
-          <a href="posts/git-best-practices.html" class="post-card">
-            <div class="post-card-header">
-              <span class="post-badge">技术</span>
-              <span class="post-date">2026-01-28</span>
-            </div>
-            <h3>Git 最佳实践指南</h3>
-            <p>日常开发中 Git 的最佳实践，包括提交规范、分支管理等。</p>
-            <div class="tags">
-              <span class="tag">#Git</span>
-              <span class="tag">#工作流</span>
-            </div>
-          </a>
+          <article class="post-card">
+            <a href="posts/git-best-practices.html" class="post-card-link">
+              <header class="post-card-header">
+                <span class="post-badge" aria-label="分类：技术">技术</span>
+                <time class="post-date" datetime="2026-01-28">2026-01-28</time>
+              </header>
+              <h3>Git 最佳实践指南</h3>
+              <p>日常开发中 Git 的最佳实践，包括提交规范、分支管理等。</p>
+              <div class="tags">
+                <span class="tag">#Git</span>
+                <span class="tag">#工作流</span>
+              </div>
+            </a>
+          </article>
         </div>
       </div>
     </section>
@@ -146,7 +199,7 @@
       <div class="container">
         <h2 class="section-title">关于我</h2>
         <div class="about-content">
-          <div class="about-avatar">L</div>
+          <div class="about-avatar" aria-hidden="true">L</div>
           <div class="about-text">
             <h3>Lium</h3>
             <p>一名热爱编程的开发者，喜欢探索新技术，记录学习心得。这个博客是我分享知识、记录成长的地方。</p>
@@ -163,7 +216,7 @@
           <a href="index.html">首页</a>
           <a href="archive.html">归档</a>
           <a href="about.html">关于</a>
-          <a href="https://github.com/Lium-7768" target="_blank">GitHub</a>
+          <a href="https://github.com/Lium-7768" target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
         <p class="footer-copyright">&copy; 2026 Lium. Built with ❤️ and GitHub Pages.</p>
       </div>

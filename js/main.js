@@ -1,19 +1,85 @@
-// Theme toggle
-const themeToggle = document.getElementById('themeToggle');
-const html = document.documentElement;
+// 主题切换：持久化、同步 aria-pressed 与 meta theme-color
+(function() {
+  const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const metaTheme = document.getElementById('themeColor');
 
-// Check for saved theme preference or default to light mode
-const savedTheme = localStorage.getItem('theme') || 'light';
-html.setAttribute('data-theme', savedTheme);
+  function getSystemPref() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
 
-themeToggle.addEventListener('click', () => {
-  const currentTheme = html.getAttribute('data-theme');
-  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-  html.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-});
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      root.setAttribute('data-theme', 'dark');
+      if (btn) btn.setAttribute('aria-pressed', 'true');
+      if (metaTheme) metaTheme.setAttribute('content', '#0f172a');
+    } else {
+      root.removeAttribute('data-theme');
+      if (btn) btn.setAttribute('aria-pressed', 'false');
+      if (metaTheme) metaTheme.setAttribute('content', '#ffffff');
+    }
+  }
 
-// Smooth scroll for anchor links
+  // 初始化
+  const saved = localStorage.getItem('theme');
+  applyTheme(saved || getSystemPref());
+
+  // 点击切换
+  if (btn) {
+    btn.addEventListener('click', () => {
+      const current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', next);
+      applyTheme(next);
+    });
+  }
+
+  // 系统主题变更时同步（若用户未手动选择）
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (!localStorage.getItem('theme')) {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+  }
+})();
+
+// 移动端导航开关
+(function() {
+  const toggle = document.getElementById('navToggle');
+  const nav = document.getElementById('primaryNav');
+  
+  if (!toggle || !nav) return;
+
+  toggle.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    nav.classList.toggle('open', !expanded);
+    
+    // 更新 aria-label
+    toggle.setAttribute('aria-label', !expanded ? '关闭主导航' : '打开主导航');
+  });
+
+  // 点击导航后关闭菜单
+  nav.addEventListener('click', (e) => {
+    if (e.target.tagName === 'A') {
+      toggle.setAttribute('aria-expanded', 'false');
+      nav.classList.remove('open');
+      toggle.setAttribute('aria-label', '打开主导航');
+    }
+  });
+
+  // 点击页面其他地方关闭菜单
+  document.addEventListener('click', (e) => {
+    if (!toggle.contains(e.target) && !nav.contains(e.target)) {
+      toggle.setAttribute('aria-expanded', 'false');
+      nav.classList.remove('open');
+      toggle.setAttribute('aria-label', '打开主导航');
+    }
+  });
+})();
+
+// 平滑滚动（保留）
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function (e) {
     const href = this.getAttribute('href');
@@ -30,7 +96,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-// Reading progress indicator (for post pages)
+// 阅读进度条（仅文章页）
 const createProgressBar = () => {
   const progressBar = document.createElement('div');
   progressBar.id = 'reading-progress';
@@ -54,12 +120,12 @@ const createProgressBar = () => {
   });
 };
 
-// Only show progress bar on post pages
+// 仅在文章页显示进度条
 if (document.querySelector('.post-content')) {
   createProgressBar();
 }
 
-// Table of Contents (for post pages)
+// 目录生成（仅文章页）
 const createTOC = () => {
   const postContent = document.querySelector('.post-content');
   if (!postContent) return;
@@ -89,18 +155,14 @@ const createTOC = () => {
       heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
-    // Add level based on h2/h3
     li.style.paddingLeft = heading.tagName === 'H3' ? '20px' : '0';
     li.appendChild(a);
     tocList.appendChild(li);
-
-    // Add id to heading
     heading.id = `heading-${index}`;
   });
 
   toc.appendChild(tocList);
 
-  // Insert TOC after post header
   const postHeader = document.querySelector('.post-header');
   if (postHeader) {
     toc.style.cssText = `
@@ -125,7 +187,7 @@ const createTOC = () => {
 
 createTOC();
 
-// Copy code button (for post pages)
+// 复制代码按钮
 document.querySelectorAll('pre code').forEach((block) => {
   const pre = block.parentElement;
   const button = document.createElement('button');
