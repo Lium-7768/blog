@@ -633,3 +633,76 @@ footer {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* ========== 溢出保护 ========== */
+img, svg, video {
+  max-width: 100%;
+  height: auto;
+}
+
+pre {
+  overflow: auto;
+  padding: var(--s-2);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--r-1);
+}
+
+article {
+  overflow-wrap: anywhere;
+}
+
+/* ========== 排版统一 ========== */
+h1 { margin: 0 0 var(--s-3); }
+h2 { margin: var(--s-4) 0 var(--s-2); }
+h3 { margin: var(--s-3) 0 var(--s-2); }
+p, ul, ol, pre, blockquote { margin: 0 0 var(--s-2); }
+ul, ol { padding-left: var(--s-3); }
+
+/* ========== 抽屉改进 ========== */
+.nav-drawer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: min(80vw, 320px);
+  background: var(--bg-card);
+  border-right: 1px solid var(--border-color);
+  transform: translateX(-100%);
+  transition: transform .25s ease;
+  box-shadow: var(--shadow-lg);
+  padding: var(--s-3) var(--s-2);
+  z-index: 999;
+  overflow-y: auto;
+}
+
+html.nav-open .nav-drawer {
+  transform: translateX(0);
+}
+
+/* 导航遮罩 */
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+  z-index: 998;
+}
+
+html.nav-open .nav-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 禁止背景滚动 */
+html.nav-open body {
+  overflow: hidden;
+}
+
+/* ========== reduced-motion ========== */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .nav-overlay, .nav-drawer { transition: none; }
+}

@@ -1,108 +1,96 @@
-// 主题切换：持久化、无闪烁
+// 主题切换：持久化、无闪烁、同步 theme-color
 (function() {
-  const root = document.documentElement;
-  const btn = document.getElementById('themeToggle');
-  const metaTheme = document.getElementById('themeColor');
+  var root = document.documentElement;
+  var btn = document.getElementById('themeToggle');
+  var metaTheme = document.getElementById('themeColor');
+  var key = 'theme';
+  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
-  function getSystemPref() {
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-
-  function applyTheme(theme) {
-    // 开启过渡动画
-    root.classList.add('theme-animating');
-    
-    if (theme === 'dark') {
-      root.setAttribute('data-theme', 'dark');
-      if (btn) btn.setAttribute('aria-pressed', 'true');
-      if (metaTheme) metaTheme.setAttribute('content', '#0f172a');
-    } else {
-      root.removeAttribute('data-theme');
-      if (btn) btn.setAttribute('aria-pressed', 'false');
-      if (metaTheme) metaTheme.setAttribute('content', '#ffffff');
+  function applyTheme(t, animate) {
+    if (animate) {
+      root.classList.add('theme-animating');
+      setTimeout(function() { root.classList.remove('theme-animating'); }, 300);
     }
     
-    // 移除过渡动画类
-    setTimeout(() => root.classList.remove('theme-animating'), 300);
+    if (t === 'dark') {
+      root.setAttribute('data-theme', 'dark');
+      if (metaTheme) metaTheme.setAttribute('content', '#0f172a');
+      if (btn) btn.setAttribute('aria-pressed', 'true');
+    } else {
+      root.removeAttribute('data-theme');
+      if (metaTheme) metaTheme.setAttribute('content', '#ffffff');
+      if (btn) btn.setAttribute('aria-pressed', 'false');
+    }
   }
 
   // 初始化
-  const saved = localStorage.getItem('theme');
-  applyTheme(saved || getSystemPref());
+  var saved = localStorage.getItem(key);
+  applyTheme(saved || (prefersDark.matches ? 'dark' : 'light'), false);
 
   // 点击切换
   if (btn) {
-    btn.addEventListener('click', () => {
-      const current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-      const next = current === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('theme', next);
-      applyTheme(next);
+    btn.addEventListener('click', function() {
+      var current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      var next = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(key, next);
+      applyTheme(next, true);
     });
   }
 
   // 系统主题变更
-  if (window.matchMedia) {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-      if (!localStorage.getItem('theme')) {
-        applyTheme(e.matches ? 'dark' : 'light');
-      }
-    });
-  }
-})();
-
-// 移动端导航抽屉
-(function() {
-  const menuToggle = document.getElementById('menuToggle');
-  const navOverlay = document.getElementById('navOverlay');
-  const navDrawer = document.getElementById('navDrawer');
-  
-  if (!menuToggle || !navOverlay || !navDrawer) return;
-  
-  let previousFocus = null;
-
-  function openMenu() {
-    previousFocus = document.activeElement;
-    menuToggle.setAttribute('aria-expanded', 'true');
-    menuToggle.setAttribute('aria-label', '关闭菜单');
-    document.documentElement.classList.add('nav-open');
-    document.body.style.overflow = 'hidden';
-    
-    // 焦点移到抽屉第一个链接
-    const firstLink = navDrawer.querySelector('a');
-    if (firstLink) firstLink.focus();
-  }
-
-  function closeMenu() {
-    menuToggle.setAttribute('aria-expanded', 'false');
-    menuToggle.setAttribute('aria-label', '打开菜单');
-    document.documentElement.classList.remove('nav-open');
-    document.body.style.overflow = '';
-    
-    // 焦点还原
-    if (previousFocus) previousFocus.focus();
-  }
-
-  menuToggle.addEventListener('click', () => {
-    const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
-    if (expanded) {
-      closeMenu();
-    } else {
-      openMenu();
+  prefersDark.addEventListener('change', function(e) {
+    if (!localStorage.getItem(key)) {
+      applyTheme(e.matches ? 'dark' : 'light', true);
     }
   });
+})();
 
-  // 点击遮罩关闭
-  navOverlay.addEventListener('click', closeMenu);
+// 移动端导航抽屉（焦点陷阱 + Esc 关闭）
+(function() {
+  var drawer = document.getElementById('navDrawer');
+  var overlay = document.getElementById('navOverlay');
+  var btn = document.getElementById('menuToggle');
+  
+  if (!drawer || !overlay || !btn) return;
+  
+  var focusable, lastActive, opened = false;
 
-  // 点击链接后关闭
-  navDrawer.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', closeMenu);
-  });
+  function setOpen(open) {
+    opened = open;
+    document.documentElement.classList.toggle('nav-open', open);
+    drawer.setAttribute('aria-hidden', !open);
+    btn.setAttribute('aria-expanded', open);
+    
+    if (open) {
+      lastActive = document.activeElement;
+      focusable = drawer.querySelectorAll('a, button, [tabindex]:not([tabindex="-1"])');
+      if (focusable.length) focusable[0].focus();
+    } else {
+      if (lastActive) lastActive.focus();
+    }
+  }
 
-  // Esc 键关闭
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && document.documentElement.classList.contains('nav-open')) {
-      closeMenu();
+  btn.addEventListener('click', function() { setOpen(!opened); });
+  overlay.addEventListener('click', function() { setOpen(false); });
+
+  document.addEventListener('keydown', function(e) {
+    if (!opened) return;
+    
+    if (e.key === 'Escape') {
+      setOpen(false);
+    }
+    
+    if (e.key === 'Tab' && focusable && focusable.length) {
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
   });
 })();
@@ -110,15 +98,12 @@
 // 平滑滚动
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function (e) {
-    const href = this.getAttribute('href');
+    var href = this.getAttribute('href');
     if (href !== '#' && href.length > 1) {
       e.preventDefault();
-      const target = document.querySelector(href);
+      var target = document.querySelector(href);
       if (target) {
-        target.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
   });
