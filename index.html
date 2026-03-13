@@ -62,13 +62,13 @@
   <a href="#main" class="skip-link">跳到主要内容</a>
   
   <!-- 导航遮罩 -->
-  <div class="nav-overlay" id="navOverlay"></div>
+  <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
   
   <!-- 移动端导航抽屉 -->
-  <div class="nav-drawer" id="navDrawer">
+  <div class="nav-drawer" id="navDrawer" role="dialog" aria-modal="true" aria-label="主导航" tabindex="-1">
     <div class="nav-title">导航</div>
     <nav>
-      <a href="index.html" aria-current="page">首页</a>
+      <a href="/" aria-current="page">首页</a>
       <a href="#posts">文章</a>
       <a href="#about">关于</a>
       <a href="archive.html">归档</a>
@@ -79,13 +79,13 @@
   <header>
     <div class="container">
       <div class="header-inner">
-        <a href="index.html" class="logo" aria-label="返回首页">
+        <a href="/" class="logo" aria-label="返回首页">
           <span class="logo-icon" aria-hidden="true">L</span>
           <span class="logo-text">Lium 的博客</span>
         </a>
         
         <nav class="primary-nav" aria-label="主导航">
-          <a href="index.html" aria-current="page">首页</a>
+          <a href="/" aria-current="page">首页</a>
           <a href="#posts">文章</a>
           <a href="#about">关于</a>
           <a href="archive.html">归档</a>
