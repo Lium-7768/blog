@@ -50,31 +50,64 @@
   const nav = document.getElementById('primaryNav');
   
   if (!toggle || !nav) return;
+  
+  // 保存上一个焦点元素
+  let previousFocus = null;
 
   toggle.addEventListener('click', () => {
     const expanded = toggle.getAttribute('aria-expanded') === 'true';
-    toggle.setAttribute('aria-expanded', String(!expanded));
-    nav.classList.toggle('open', !expanded);
     
-    // 更新 aria-label
-    toggle.setAttribute('aria-label', !expanded ? '关闭主导航' : '打开主导航');
+    if (!expanded) {
+      // 打开菜单
+      previousFocus = document.activeElement;
+      toggle.setAttribute('aria-expanded', 'true');
+      nav.classList.add('open');
+      toggle.setAttribute('aria-label', '关闭主导航');
+      
+      // 焦点移到第一个链接
+      const firstLink = nav.querySelector('a');
+      if (firstLink) firstLink.focus();
+      
+      // 禁止页面滚动
+      document.body.style.overflow = 'hidden';
+    } else {
+      // 关闭菜单
+      closeMenu();
+    }
   });
+
+  function closeMenu() {
+    toggle.setAttribute('aria-expanded', 'false');
+    nav.classList.remove('open');
+    toggle.setAttribute('aria-label', '打开主导航');
+    
+    // 恢复页面滚动
+    document.body.style.overflow = '';
+    
+    // 焦点还原到按钮
+    if (previousFocus) previousFocus.focus();
+  }
 
   // 点击导航后关闭菜单
   nav.addEventListener('click', (e) => {
     if (e.target.tagName === 'A') {
-      toggle.setAttribute('aria-expanded', 'false');
-      nav.classList.remove('open');
-      toggle.setAttribute('aria-label', '打开主导航');
+      closeMenu();
     }
   });
 
   // 点击页面其他地方关闭菜单
   document.addEventListener('click', (e) => {
     if (!toggle.contains(e.target) && !nav.contains(e.target)) {
-      toggle.setAttribute('aria-expanded', 'false');
-      nav.classList.remove('open');
-      toggle.setAttribute('aria-label', '打开主导航');
+      if (nav.classList.contains('open')) {
+        closeMenu();
+      }
+    }
+  });
+
+  // Esc 键关闭菜单
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && nav.classList.contains('open')) {
+      closeMenu();
     }
   });
 })();
