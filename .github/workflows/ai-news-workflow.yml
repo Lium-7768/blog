@@ -2,38 +2,38 @@ name: AI News Generator
 
 on:
   schedule:
-    # 每天 UTC 00:00（北京时间 8:00）运行
     - cron: '0 0 * * *'
-  workflow_dispatch:  # 手动触发
+  workflow_dispatch:
 
-# 最小权限原则
+# 最小权限（默认只读）
 permissions:
-  contents: write
+  contents: read
 
-# 防止并发冲突
 concurrency:
   group: ai-news-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   generate-news:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'  # 仅在主分支运行
+    runs-on: ubuntu-22.04  # 固定版本
+    if: github.ref == 'refs/heads/main'
+    timeout-minutes: 15
     
     steps:
       - name: Checkout blog
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
         with:
           persist-credentials: false
       
       - name: Setup Python
-        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c  # v5.0.0
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c
         with:
           python-version: '3.11'
       
       - name: Install dependencies
         run: |
-          pip install --require-hashes -r scripts/requirements.txt
+          set -euo pipefail
+          pip install --no-deps -r scripts/requirements.txt
       
       - name: Generate news article
         env:
@@ -43,7 +43,18 @@ jobs:
           set -euo pipefail
           python scripts/generate_news.py
       
+      - name: Verify changes
+        run: |
+          # 验证只修改了 posts/ 目录
+          if git diff --name-only HEAD | grep -v '^posts/'; then
+            echo "错误: 检测到非法文件修改"
+            exit 1
+          fi
+      
       - name: Commit and push
+        # 仅此步骤需要写权限
+        permissions:
+          contents: write
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -53,5 +64,7 @@ jobs:
           git add posts/
           if ! git diff --quiet && ! git diff --staged --quiet; then
             git commit -m "feat: 添加 AI 新闻日报 - $(date '+%Y-%m-%d')"
-            git push https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git main
+            # 使用 HTTP 头传递 token，而不是 URL
+            git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)" \
+              push origin main
           fi
