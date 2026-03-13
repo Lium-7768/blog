@@ -55,6 +55,21 @@
   <!-- Skip Link -->
   <a href="#main" class="skip-link">跳到主要内容</a>
   
+  <!-- 导航遮罩 -->
+  <div class="nav-overlay" id="navOverlay"></div>
+  
+  <!-- 移动端导航抽屉 -->
+  <div class="nav-drawer" id="navDrawer">
+    <div class="nav-title">导航</div>
+    <nav>
+      <a href="index.html" aria-current="page">首页</a>
+      <a href="#posts">文章</a>
+      <a href="#about">关于</a>
+      <a href="archive.html">归档</a>
+      <a href="https://github.com/Lium-7768" target="_blank" rel="noopener noreferrer">GitHub</a>
+    </nav>
+  </div>
+  
   <header>
     <div class="container">
       <div class="header-inner">
@@ -63,27 +78,26 @@
           <span class="logo-text">Lium 的博客</span>
         </a>
         
-        <button class="nav-toggle" id="navToggle" aria-label="打开主导航" aria-expanded="false" aria-controls="primaryNav">
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-          <span class="nav-toggle-bar" aria-hidden="true"></span>
-        </button>
-        
-        <nav id="primaryNav" aria-label="主导航">
-          <ul class="nav-list">
-            <li><a href="index.html" aria-current="page">首页</a></li>
-            <li><a href="#posts">文章</a></li>
-            <li><a href="#about">关于</a></li>
-            <li><a href="archive.html">归档</a></li>
-            <li><a href="https://github.com/Lium-7768" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-          </ul>
+        <nav class="primary-nav" aria-label="主导航">
+          <a href="index.html" aria-current="page">首页</a>
+          <a href="#posts">文章</a>
+          <a href="#about">关于</a>
+          <a href="archive.html">归档</a>
+          <a href="https://github.com/Lium-7768" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
         
-        <button class="theme-toggle" id="themeToggle" aria-label="切换主题" aria-pressed="false">
-          <svg class="sun-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-          </svg>
-        </button>
+        <div class="header-actions">
+          <button class="icon-btn theme-toggle" id="themeToggle" aria-label="切换主题" aria-pressed="false">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+          </button>
+          <button class="icon-btn menu-toggle" id="menuToggle" aria-label="打开菜单" aria-expanded="false" aria-controls="navDrawer">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </header>
