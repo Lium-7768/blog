@@ -6,36 +6,52 @@ on:
     - cron: '0 0 * * *'
   workflow_dispatch:  # 手动触发
 
+# 最小权限原则
+permissions:
+  contents: write
+
+# 防止并发冲突
+concurrency:
+  group: ai-news-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   generate-news:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  # 仅在主分支运行
     
     steps:
       - name: Checkout blog
-        uses: actions/checkout@v4
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
       
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c  # v5.0.0
         with:
           python-version: '3.11'
       
       - name: Install dependencies
         run: |
-          pip install -r scripts/requirements.txt
+          pip install --require-hashes -r scripts/requirements.txt
       
       - name: Generate news article
         env:
           API_BASE: ${{ secrets.API_BASE }}
           API_KEY: ${{ secrets.API_KEY }}
         run: |
+          set -euo pipefail
           python scripts/generate_news.py
       
       - name: Commit and push
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -euo pipefail
           git config user.name "AI News Bot"
           git config user.email "bot@lium.is-a.dev"
           git add posts/
-          git diff --quiet && git diff --staged --quiet || git commit -m "feat: 添加 AI 新闻日报 - $(date '+%Y-%m-%d')"
-          git push
+          if ! git diff --quiet && ! git diff --staged --quiet; then
+            git commit -m "feat: 添加 AI 新闻日报 - $(date '+%Y-%m-%d')"
+            git push https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git main
+          fi
