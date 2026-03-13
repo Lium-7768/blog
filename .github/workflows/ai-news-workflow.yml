@@ -1,0 +1,41 @@
+name: AI News Generator
+
+on:
+  schedule:
+    # 每天 UTC 00:00（北京时间 8:00）运行
+    - cron: '0 0 * * *'
+  workflow_dispatch:  # 手动触发
+
+jobs:
+  generate-news:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout blog
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r scripts/requirements.txt
+      
+      - name: Generate news article
+        env:
+          API_BASE: ${{ secrets.API_BASE }}
+          API_KEY: ${{ secrets.API_KEY }}
+        run: |
+          python scripts/generate_news.py
+      
+      - name: Commit and push
+        run: |
+          git config user.name "AI News Bot"
+          git config user.email "bot@lium.is-a.dev"
+          git add posts/
+          git diff --quiet && git diff --staged --quiet || git commit -m "feat: 添加 AI 新闻日报 - $(date '+%Y-%m-%d')"
+          git push
