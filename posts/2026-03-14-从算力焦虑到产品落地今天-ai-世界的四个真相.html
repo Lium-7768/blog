@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI 新闻日报 - 2026年03月14日">
+  <title>AI 新闻日报 - 2026年03月14日 - Lium 的博客</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <a href="../index.html" class="logo">
+          <span class="logo-icon">L</span>
+          Lium 的博客
+        </a>
+        <nav>
+          <a href="../index.html">首页</a>
+          <a href="../archive.html">归档</a>
+          <a href="../about.html">关于</a>
+          <a href="https://github.com/Lium-7768" target="_blank">GitHub</a>
+        </nav>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container post-page">
+    <a href="../index.html" class="back-btn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      返回首页
+    </a>
+
+    <article class="post-header">
+      <div class="post-meta">
+        <span class="badge">AI</span>
+        <span class="date">2026年03月14日</span>
+      </div>
+      <h1 class="post-title">AI 新闻日报 - 2026年03月14日</h1>
+      <p class="post-excerpt">AI 领域最新动态与技术热点</p>
+    </article>
+
+    <div class="post-content">
+<h2>引言</h2>
+<p>今天的 AI 热点不再只是模型参数和新能力，而是贯穿“算力—工程—产品—社会”的完整链路：供给侧的算力与稳定性承压，工程侧开始重建“新中间层”，产品侧从跑分转向单位价值创造，社会侧则在适应与规制之间寻找平衡。下面从几条看似无关的新闻，拼出一幅正在成形的产业图景。</p>
+<h2>1) 算力与稳定性：SLA 才是新的“护城河”</h2>
+<ul>
+<li>多位用户反馈 Google AI Pro 的 Antigravity 配额重置与宣传不符，出现 10 天锁定的极端情况；同时，社区吐槽 Claude 晚间明显变慢。这些信号共同指向一个事实：多租户大模型服务在高峰期的排队、限流与资源调度，远未“无感”。</li>
+<li>Meta 据报道计划裁员以应对 AI 成本压力；与此同时，英伟达 GTC 将把 CPU 推到“台前”。这不是回到旧时代，而是承认真实工作负载中，数据编解码、特征工程、Agent 工具调用、向量检索、编排与观测等大量前后处理，CPU/内存/IO 的效用被低估了。</li>
+<li>现实含义：</li>
+</ul>
+<p>  - 工程侧必须做“多提供商、多区域、自动降级”。建立超时、退避与重试策略，避免“雪崩重试”。</p>
+<p>  - 设计“交互弹性”：允许异步完成、离线通知、可继续的会话状态。</p>
+<p>  - 成本侧要有“每调用边际毛利”监控，把峰值算力与体验目标绑定，而不是“按幻觉收费”。</p>
+<h2>2) 从跑分到交付：ROI 取代“模型崇拜”</h2>
+<ul>
+<li>多篇一线实践复盘强调“跑分和交付之间的鸿沟”：离线分数并不等于上线效果，真正有效的是任务完成率、二跳留存、工单化解率、单位成果时延等指标。</li>
+<li>“Amazon 正在后悔 AI”的舆论与 Sam Altman 关于“AI 正在改变劳资平衡”的表述，实际上都指向同一件事：AI 投入与产出的不对称在放大，管理者需要能对齐业务价值的衡量体系。</li>
+<li>落地建议：</li>
+</ul>
+<p>  - 在 PRD 中写清“可测量的成功定义”（例如：转化率+响应时延+人工接管率）。</p>
+<p>  - 架设“事实回流”通道：把真实对话、失败路径、人工修正，闭环到数据与提示词迭代。</p>
+<p>  - 预算粒度下沉到“功能级”而非“账号级”，把成本与收益拉到同一维度对比。</p>
+<h2>3) “新中间层”崛起：本地优先、可观测、可回滚</h2>
+<ul>
+<li>开源生态正在填补工程缺口：PDR AI 试图把 PRD、市场、入职等文档流标准化；Chat Daddy 用极轻的终端客户端替代笨重 Electron；Riva 提供面向 AI Agents 的本地优先观测；SafeAgent 专注“恰好一次”副作用防重（避免重复扣款/发信）；还有面向代理的 Discord CLI。</li>
+<li>与“中间件的终结”论相映成趣的是：旧式集成中间件并未消失，而是被“提示路由+工具协议+可观测与幂等层”重构。新的中间层更贴近数据与动作本身。</li>
+<li>设计模式清单：</li>
+</ul>
+<p>  - 幂等与去重：为每次外部副作用引入 idempotency key、写前校验、事务外补偿。</p>
+<p>  - 本地优先：把缓存、搜索索引、会话上下文下沉到本地或边缘，降低云端峰值压力与隐私暴露。</p>
+<p>  - 全链路观测：事件溯源、token 花费、工具调用拓扑、失败热力图，让“为什么这次答错了”可解释、可修复。</p>
+<h2>4) 社会脉搏：人机协作边界与“温和使用”</h2>
+<ul>
+<li>报告《How the world lives with AI》显示，不同地区对 AI 的接受度与风险感知差异显著；“AI 代理招募人类观察线下世界”的趋势，提示我们线下数据采集与劳务平台的监管议题会升温。</li>
+<li>人文社科的介入被强调：不仅是伦理审查，更是描述、规范与评估 AI 如何改变知识、劳动与权力的框架。</li>
+<li>在健康等高风险场景（如“AI 心理健康”类产品）：</li>
+</ul>
+<p>  - 必须提供清晰免责声明与转介机制；</p>
+<p>  - 对高风险对话设“人工值守阈值”；</p>
+<p>  - 数据最小化与边界内计算，优先本地或端侧处理。</p>
+<h2>小结</h2>
+<p>如果说过去两年是“模型年”，那么今年起是“系统年”：供给侧的算力与 SLO、工程侧的中间层与可观测、产品侧的 ROI 量化、社会侧的规范共识，开始同时发力。短期看，CPU 正在回到舞台中央，成为 AI 工作负载的“粘合剂”；中期看，幂等、降级、观测将成为 AI 应用的基础设施；长期看，评价一项 AI 能力，不再看单点跑分，而是看它是否以可承受的成本，稳定地把真实世界的问题关闭工单、交付结果。</p>
+<p>对今天的 AI 创业者与团队，最实用的建议只有三条：先把系统做稳，再把价值说清，最后让证据自己说话。</p>
+<h2>参考来源</h2>
+<ul>
+<li>PDR AI – LaunchStack: https://github.com/Deodat-Lawson/LaunchStack</li>
+<li>Google AI Pro 订阅与 Antigravity 配额讨论: https://discuss.ai.google.dev/t/google-ai-pro-subscription-antigravity-quota-not-working-as-advertised-10-day-lockout-instead-of-5-hour-reset/118505</li>
+<li>2025 Global Dialogues Index 报告（PDF）: https://static1.squarespace.com/static/631d02b2dfa9482a32db47ec/t/696fdc02d5b1030cb064d15a/1768938498989/2025+Global+Dialogues+Index+Report_Optimized.pdf</li>
+<li>Meta 或将裁员以应对 AI 成本: https://www.theguardian.com/technology/2026/mar/13/meta-layoffs-ai</li>
+<li>英伟达 GTC：CPU 正在走到台前: https://www.cnbc.com/2026/03/13/nvidia-gtc-ai-jensen-huang-cpu-gpu.html</li>
+<li>Claude 夜间性能变慢讨论: https://news.ycombinator.com/item?id=47373935</li>
+<li>The End of Middleware: https://brianeisenberg.substack.com/p/the-end-of-middleware-how-ai-builders</li>
+<li>The Gap Between What AI Scores and What AI Ships: https://fromtheterminal.substack.com/p/the-gap-between-what-ai-scores-and</li>
+<li>Lessons from Building AI Features: https://ghiculescu.substack.com/p/lessons-from-building-ai-features</li>
+<li>SafeAgent：恰好一次执行防重: https://news.ycombinator.com/item?id=47372944</li>
+<li>Riva：本地优先的 Agents 观测: https://github.com/sarkar-ai-taken/riva</li>
+<li>AI 代理招募人类观察线下世界: https://www.noemamag.com/ai-agents-are-recruiting-humans-to-observe-the-offline-world/</li>
+<li>Sam Altman 谈劳资平衡与 AI: https://finance.yahoo.com/news/sam-altman-admits-ai-killing-141643543.html</li>
+<li>Chat Daddy 终端客户端: https://lucianlabs.ca/blog/chat-daddy.html</li>
+<li>Mindease – AI Mental Health: https://mindease.zzstudio.io.vn/</li>
+</ul>
+    </div>
+
+    <nav class="post-nav">
+      <a href="../archive.html" class="prev">
+        <div class="post-nav-label">← 查看归档</div>
+        <div class="post-nav-title">更多文章</div>
+      </a>
+    </nav>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="../index.html">首页</a>
+          <a href="../archive.html">归档</a>
+          <a href="../about.html">关于</a>
+        </div>
+        <p class="footer-copyright">&copy; 2026 Lium. Built with GitHub Pages.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
