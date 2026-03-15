@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI 新闻日报 - 2026年03月15日">
+  <title>AI 新闻日报 - 2026年03月15日 - Lium 的博客</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <a href="../index.html" class="logo">
+          <span class="logo-icon">L</span>
+          Lium 的博客
+        </a>
+        <nav>
+          <a href="../index.html">首页</a>
+          <a href="../archive.html">归档</a>
+          <a href="../about.html">关于</a>
+          <a href="https://github.com/Lium-7768" target="_blank">GitHub</a>
+        </nav>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container post-page">
+    <a href="../index.html" class="back-btn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      返回首页
+    </a>
+
+    <article class="post-header">
+      <div class="post-meta">
+        <span class="badge">AI</span>
+        <span class="date">2026年03月15日</span>
+      </div>
+      <h1 class="post-title">AI 新闻日报 - 2026年03月15日</h1>
+      <p class="post-excerpt">AI 领域最新动态与技术热点</p>
+    </article>
+
+    <div class="post-content">
+<h2>引言</h2>
+<p>这一周的AI新闻呈现出两条清晰主线：一是“价值与归属”的拉扯，从开源RAG被“挪用”到“AI红利归谁”，再到好莱坞与劳动力市场的博弈；二是“落地与工程化”的提速，从本地私有搜索到Agent编排、资源调度与桌面并行。与此同时，偏见、溯源与“AI slop（低质AI产出）”治理仍是行业底噪。本文尝试将这些碎片整合为趋势与实践建议。</p>
+<h2>1. 价值与归属：开源、红利与行业博弈</h2>
+<ul>
+<li>开源与署名：一位工程师在HN上称，其两年打磨的企业级RAG架构与核心组件开源后，被他人作为“代表作”对外宣称。这类争议在AI时代更频繁——复用容易、署名脆弱。建议：</li>
+</ul>
+<p>  - 在仓库中明确LICENSE与CITATION.cff，要求引用；在README中标注架构图与关键设计的原创性。</p>
+<p>  - 引入AI系统SBOM（软件物料清单）与溯源标签，对数据处理链、模型版本、插件依赖做机器可读记录。</p>
+<p>  - 企业侧建立“开源合规网关”，对外宣讲与招投标材料自动匹配溯源清单，降低误用风险。</p>
+<ul>
+<li>AI红利归属：Rajiv问“AI红利归谁”。现实是：资本密集型平台与算力供应商先收割，应用端能否留住红利取决于数据闭环与生产率提升能否转化为定价权。好莱坞在奥斯卡前对AI的审视，以及Karpathy的“AI就业曝光度”讨论，都折射一个问题：创意与劳作如何在训练、授权与分润中被量化。</li>
+<li>人机沟通礼仪：有人抱怨“大家都用LLM，但读到被AI润色的邮件仍会反感”。这背后是“人设真实性”的社会契约。建议在对外沟通中披露AI参与程度，并将AI用于事实校对与结构化，而非替代个人观点与风格。</li>
+</ul>
+<h2>2. 私有化浪潮：本地搜索与数据主权</h2>
+<ul>
+<li>PrivAI展示“本地运行的私有AI搜索”。这回应了两个现实：数据重力与合规边界。对于企业，能离线完成检索与问答，就能减少PII外流与延迟不稳定。</li>
+<li>实施要点：</li>
+</ul>
+<p>  - 索引策略：结合layout-aware解析与分块（如开源RAG方案强调的），减少长文丢失结构。</p>
+<p>  - 设备适配：NPU/GPU混合推理、量化与向量检索加速（faiss/scann），是从“能跑”到“好用”的分水岭。</p>
+<p>  - 可维护性：离线更新、增量索引与多租隔离是部署能否规模化的关键。</p>
+<h2>3. Agent基础设施：从“单体智能”到“多Agent编排”</h2>
+<ul>
+<li>平台级趋势：报道显示英伟达正计划推出开源Agent平台，意味着“工具接入、状态管理、长程任务执行”将进入平台化竞争。开发者不再只选模型，而是选“执行栈”。</li>
+<li>资源调度与并行：Centurion以“K8s风格”调度AI编程Agent，配合“单机16并行AI工作者”的实践分享，说明行业正在用云原生思维改造AI工作负载：队列、配额、重试、粘性会话与显存感知调度，开始成为默认能力。</li>
+<li>业务Agent：从Zirco.ai面向牙科前台到“AI对冲基金辩论小组”，垂直Agent的共同挑战是“接口脏、事实贵、风险高”。可复用基建包括：</li>
+</ul>
+<p>  - 工具治理：对外部门户与RPA调用设限与审计。</p>
+<p>  - 任务图与回溯：DAG化分解与失败可回滚。</p>
+<p>  - 评测：以业务KPI（核保准确率、候补转化率、错误工单率）作为离线与在线评测指标，而非仅凭主观“聪明程度”。</p>
+<h2>4. 质量与信任：偏见、思维链与“AI slop”</h2>
+<ul>
+<li>偏见迁移：Science Advances的研究表明，带偏见的写作助手会改变用户对社会议题的态度。这提示我们：在用户端默认启用“来源显示/反证提示”，以及在系统端做风格与立场的正交化，是必要的。</li>
+<li>“思维链”真实性：有观点（论文/讨论）指出模型可能在“装作逐步推理”，而非真实多步计算。这要求我们：</li>
+</ul>
+<p>  - 将“解释”与“决策”解绑，优先可验证的推理格式（程序化工具、约束求解、检验型代理）。</p>
+<p>  - 用编译器与静态分析作为LLM编码的“安全带”——这与“编译器如何进化”讨论不谋而合：让编译器成为事实、类型与副作用的仲裁者。</p>
+<ul>
+<li>治理“AI slop”：树状邀请制的社区增长与HackerOne上关于改进的讨论，提醒平台侧治理要结合社交图与信誉衰减机制；产品侧则应内置事实核对、引文与最小可复现片段。</li>
+</ul>
+<h2>5. 开发者工具与认知分层</h2>
+<ul>
+<li>工具选择映射开发者画像：有人用端侧模型强调隐私与可控；有人偏好云端闭源以追求SOTA性能。关键是形成“问题-工具-评测”的三角闭环：明确问题、选对栈、用对指标。</li>
+<li>代码理解与知识抽取：Repoly这类“解释任意GitHub仓库”的工具很实用，但也更需要与真实构建、测试覆盖率打通，避免“解释即合理化”。</li>
+<li>职业能力迁移：从Karpathy的岗位线索到业界实践，胜任力重心在“数据工程+系统编排+评测设计”。会写Prompt远远不够，能把端到端系统跑稳跑准才是稀缺。</li>
+</ul>
+<h2>总结</h2>
+<p>本周的关键词是“归属、私有、编排、可信”。归属之争敦促我们在开源与合规上补齐溯源与署名；私有化与本地化让企业真正把握数据主权；Agent从玩具走向生产，需要平台与调度的新基建；而偏见、思维链与AI slop提醒我们，只有把“可验证性”与“可追责”嵌入系统，AI的生产率红利才可能被更公平地分配、也更可持续地释放。</p>
+<p>——如果你正在落地一个AI系统，优先问四个问题：数据在哪、责任在哪、资源怎么调、质量如何证。把这四件事做好，比再换一个“更聪明的模型”更重要。</p>
+<h2>参考来源</h2>
+<ul>
+<li>Ask HN: Founder is claiming my 2-year RAG architecture as his AI&#39;s Featured Work: https://news.ycombinator.com/item?id=47385213</li>
+<li>PrivAI – private AI search that runs locally: https://chatpdf-server-shtq.onrender.com/</li>
+<li>Nvidia Is Planning to Launch an Open-Source AI Agent Platform (Wired): https://www.wired.com/story/nvidia-planning-ai-agent-platform-launch-open-source/</li>
+<li>Centurion – K8s-style resource scheduler for AI coding agents: https://github.com/spacelobster88/centurion</li>
+<li>How I Run 16 Parallel AI Workers on a Single Desktop: https://www.northlakelabs.com/max/blog/how-i-run-16-parallel-ai-workers/</li>
+<li>Zirco.ai – AI employee for dental front desk operations: https://news.ycombinator.com/item?id=47385090</li>
+<li>Biased AI writing assistants shift users&#39; attitudes on societal issues (Science Advances): https://www.science.org/doi/10.1126/sciadv.adw5578</li>
+<li>As the Oscars approach, Hollywood grapples with AI&#39;s growing influence: https://theconversation.com/as-the-oscars-approach-hollywood-grapples-with-ais-growing-influence-on-filmmaking-273766</li>
+<li>Who Keeps the AI Dividend?: https://rajiv.com/blog/2026/03/14/who-keeps-the-ai-dividend/</li>
+<li>AI Exposure of the US Job Market: https://karpathy.ai/jobs/</li>
+<li>Tree style invite systems reduce AI slop: https://abyss.fish/tree-style_invite_systems_reduce_AI_slop</li>
+<li>Paper: AI models are faking their step by step thinking (discussion): https://twitter.com/thetripathi58/status/2032775838329090191</li>
+<li>How compilers should evolve in the era of LLM coding (discussion): https://twitter.com/ezyang/status/2032932628131721462</li>
+<li>Repoly – AI tool that explains any GitHub repository: https://www.repoly.pro/</li>
+<li>Ask HN: Balancing the use of AI in our inter communication (h2h): https://news.ycombinator.com/item?id=47384485</li>
+<li>What has improved regarding AI slop in 2026?: https://hackerone.com/reports/2887487</li>
+<li>I built an AI hedge fund panel that debates any stock: https://ainvest-jnpzmtom62rulztvu24d6c.streamlit.app/</li>
+<li>I Asked 4 AI Models to Research the Parasite Cleanse Hype: https://christiantech.substack.com/p/i-asked-4-ai-models-to-research-the</li>
+</ul>
+    </div>
+
+    <nav class="post-nav">
+      <a href="../archive.html" class="prev">
+        <div class="post-nav-label">← 查看归档</div>
+        <div class="post-nav-title">更多文章</div>
+      </a>
+    </nav>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="../index.html">首页</a>
+          <a href="../archive.html">归档</a>
+          <a href="../about.html">关于</a>
+        </div>
+        <p class="footer-copyright">&copy; 2026 Lium. Built with GitHub Pages.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
