@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI 新闻日报 - 2026年03月18日">
+  <title>AI 新闻日报 - 2026年03月18日 - Lium 的博客</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <a href="../index.html" class="logo">
+          <span class="logo-icon">L</span>
+          Lium 的博客
+        </a>
+        <nav>
+          <a href="../index.html">首页</a>
+          <a href="../archive.html">归档</a>
+          <a href="../about.html">关于</a>
+          <a href="https://github.com/Lium-7768" target="_blank">GitHub</a>
+        </nav>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container post-page">
+    <a href="../index.html" class="back-btn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      返回首页
+    </a>
+
+    <article class="post-header">
+      <div class="post-meta">
+        <span class="badge">AI</span>
+        <span class="date">2026年03月18日</span>
+      </div>
+      <h1 class="post-title">AI 新闻日报 - 2026年03月18日</h1>
+      <p class="post-excerpt">AI 领域最新动态与技术热点</p>
+    </article>
+
+    <div class="post-content">
+<h2>引言</h2>
+<p>今天的 AI 新闻把三个矛盾又真实的趋势摆在台前：代理（Agent）从玩具变生产力工具，成本从预算项变成生死线，价值衡量却更加扑朔迷离。从“每周烧掉 10 万美金的 Token”“浏览器内端到端本地 AI”“为代理提供邮箱与安全审计”，再到“欧盟岗位对 LLM 的暴露度”“投资者与生产力的困惑”，这一天像极了 AI 落地的横切面。</p>
+<h2>成本与基础设施的现实主义</h2>
+<p>Ask HN 有人吐槽每周 10.3 万美元的 LLM 账单，核心是上下文冗余与工具调用痕迹膨胀。这不是孤例：随着代理编排、函数调用与长会话普及，成本爆炸几乎是系统性问题。对应地，基础设施层开始补课：</p>
+<ul>
+<li>llmtop：面向 vLLM、SGLang、Ollama 等的终端监控，做“推理集群的 htop”，聚焦 KV cache 感知与负载均衡。</li>
+<li>uniinfer：自动探测硬件、判断模型是否可装载，降低部署摩擦。</li>
+<li>Rust 强化的 RL（rlox）与 WebGPU/浏览器内推理（N0x）带来“算力下沉”，意味着更少出网、更低延迟与更好单位成本。</li>
+</ul>
+<p>我的三条降本建议（工程侧，能立竿见影）：</p>
+<ul>
+<li>约束即质量：缩短系统提示，工具调用 trace 摘要化、去冗余；对思维链只保留“结论 + 关键依据”；引入“计划-执行”两阶段，减少回合数。</li>
+<li>结构化上下文：RAG 前做去重与片段压缩；函数/工具签名单独缓存；Prompt 与长背景使用提供商的缓存或自建 KV。</li>
+<li>推理栈优化：小模型蒸馏/量化 + 连续批处理；模型路由（简单任务走本地/小模型，复杂问题再上云）；引入 llmtop 一类可视化监控做容量与路由调优。</li>
+</ul>
+<h2>边缘与本地：从浏览器到桌面</h2>
+<p>“把 AI 带到你身边”的叙事正从口号变产物：</p>
+<ul>
+<li>N0x 在浏览器内完成 LLM 推理、RAG、ReAct 与 Pyodide 执行，真正实现“无后端、无钥匙、本地数据不外流”。</li>
+<li>Echoo 把系统级 AI 接到 macOS 快捷键与语音，试图让 AI 变成 OS 原生能力。</li>
+<li>QCCBot 在浏览器里跑完整 Android，并支持 AI 控制，意味着自动化从“堆手机墙”走向“云端沙箱”。</li>
+<li>Confer 为 Meta 引入“基础隐私”，以及开发者用纯文本账本+少量 AI 辅助做税表的案例，均说明：隐私与合规将越来越绑定“本地/边缘推理”。</li>
+</ul>
+<p>边缘化并非“反云”，而是形成“近端优先、云端补位”的新拓扑：数据敏感性、交互延迟与成本三角，驱动算力部署位置的动态决策。</p>
+<h2>代理的信任与身份：从“能做”到“可托付”</h2>
+<p>代理生态开始长出两样“看不见却关键”的基础设施：</p>
+<ul>
+<li>社区安全扫描（SkillsGate）：对代理技能做众包的安全审计与信誉累积，补上“能力可用≠可托付”的缺口。</li>
+<li>Lumbox 给每个代理发邮箱、支持 OTP 提取，解决“需要真实网络身份”的痛点。</li>
+</ul>
+<p>再加一个“社交代理”样本：Sotto 让你的 AI 与朋友的 AI 协作，“跨人—机—人”的时间协调是典型强协作场景。我的建议：</p>
+<ul>
+<li>最小权限与可撤销：代理技能按作用域授予，权限与预算可热撤。</li>
+<li>社区共识与审计：引入签名与 SBOM 式技能清单，结合众包安全扫描，沉淀“公共基线”。</li>
+<li>身份隔离：Lumbox 一类工具要配合“每代理独立身份、日志与速率限制”，避免横向漂移与链式滥用。</li>
+</ul>
+<h2>生产力与价值：从“测不到”到“测不好”</h2>
+<p>三篇观点值得并读：经济学人谈“投资者暂时看不清 AI”，Solow 的“你在处处看见计算机，唯独在生产率统计中看不见”，以及“知识工作者在管理 AI 中生产力塌陷”的调研。Test Double 的洞见一针见血：AI 先改变的是“成本结构”，而非“价值结构”。加上“AI slop”批评与“AI 十诫式”的自律倡议，本周的共识是：</p>
+<ul>
+<li>AI 增强流程，而不是替代流程；若不重构流程，AI 只会把噪声规模化。</li>
+<li>真正的生产力提升，来自“约束设计”（任务分解、数据治理、反馈闭环、质量门禁），而非堆模型参数。</li>
+<li>度量要改：从“平均响应时延/准确率”转向“单位业务价值的边际成本、返工率、首问解决率”。</li>
+</ul>
+<p>换言之，AI 的价值需要“重新设计工作”，而不是“把旧工作搬给新工具”。</p>
+<h2>就业暴露的早期地图</h2>
+<p>“LLM 暴露度（EU）”的研究继续提示：高文本密度、规则化强、需综合检索的岗位更易被 LLM 重塑。与其纠结“替代”，不如主动拥抱“流程再造”和“人机编队”：让机器做检索、比对、初稿，人做设问、裁决与最后一公里的责任闭环。组织层面要将“AI 使用手册”纳入岗位说明与绩效评价，而非把试错成本外包给个人。</p>
+<h2>总结</h2>
+<p>今天的 AI 图景不是“新模型发布”的兴奋剂，而是“工程与治理”的维生素：用 llmtop 看清推理栈、用 uniinfer 与本地/浏览器推理重构成本曲线，用社区扫描与最小权限重建代理信任，用流程再造和新度量突破“索洛悖论”。当代理能够被托付、成本可被预测、价值能被度量，AI 才会从“处处看得见”变成“统计里也看得见”。</p>
+<p>——把系统做薄，把边界想清，把度量立住。</p>
+<h2>参考来源</h2>
+<ul>
+<li>LLM Exposure for EU Jobs: https://emilesilvis.com/llm-exposure-eu-jobs.html</li>
+<li>Community Security Scans for AI Agent Skills: https://skillsgate.ai/blog/community-security-scans</li>
+<li>Lumbox – Email infrastructure for AI agents: https://news.ycombinator.com/item?id=47422578</li>
+<li>Ask HN: Burning $100K/week on LLM tokens: https://news.ycombinator.com/item?id=47422571</li>
+<li>QCCBot – Android in a browser tab: https://news.ycombinator.com/item?id=47422425</li>
+<li>Confer is bringing foundational AI privacy to Meta: https://confer.to/blog/2026/03/encrypted-meta/</li>
+<li>Echoo – macOS system-wide AI: https://www.echoo.ai/</li>
+<li>Run any LLM on any hardware (uniinfer): https://github.com/Julienbase/uniinfer</li>
+<li>AI changed software cost structure not value structure: https://testdouble.com/insights/quality-you-cant-generate-ai-is-only-as-good-as-your-constraints</li>
+<li>Solow’s Paradox and AI measurement: https://theaugmentedinvestigator.substack.com/p/echoes-of-1987-how-solows-computer</li>
+<li>Knowledge workers managing AI show collapsed productivity: https://news.ycombinator.com/item?id=47421784</li>
+<li>AI – Assassinating Intelligence: https://yashgarg.dev/posts/ai-slop/</li>
+<li>llmtop – Htop for LLM inference clusters: https://github.com/InfraWhisperer/llmtop</li>
+<li>Rust-accelerated RL (rlox): https://github.com/riserally/rlox</li>
+<li>N0x – full-stack in-browser AI: https://n0xth.vercel.app/</li>
+<li>Sotto – AI coordinates with your friends’ AI: https://sotto.us</li>
+<li>Using Ledger and a touch of AI for UK tax: https://www.jvt.me/posts/2026/02/01/ledger/</li>
+</ul>
+    </div>
+
+    <nav class="post-nav">
+      <a href="../archive.html" class="prev">
+        <div class="post-nav-label">← 查看归档</div>
+        <div class="post-nav-title">更多文章</div>
+      </a>
+    </nav>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="../index.html">首页</a>
+          <a href="../archive.html">归档</a>
+          <a href="../about.html">关于</a>
+        </div>
+        <p class="footer-copyright">&copy; 2026 Lium. Built with GitHub Pages.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
