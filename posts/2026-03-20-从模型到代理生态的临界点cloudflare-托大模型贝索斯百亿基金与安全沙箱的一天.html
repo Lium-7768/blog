@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI 新闻日报 - 2026年03月20日">
+  <title>AI 新闻日报 - 2026年03月20日 - Lium 的博客</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <a href="../index.html" class="logo">
+          <span class="logo-icon">L</span>
+          Lium 的博客
+        </a>
+        <nav>
+          <a href="../index.html">首页</a>
+          <a href="../archive.html">归档</a>
+          <a href="../about.html">关于</a>
+          <a href="https://github.com/Lium-7768" target="_blank">GitHub</a>
+        </nav>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container post-page">
+    <a href="../index.html" class="back-btn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+      </svg>
+      返回首页
+    </a>
+
+    <article class="post-header">
+      <div class="post-meta">
+        <span class="badge">AI</span>
+        <span class="date">2026年03月20日</span>
+      </div>
+      <h1 class="post-title">AI 新闻日报 - 2026年03月20日</h1>
+      <p class="post-excerpt">AI 领域最新动态与技术热点</p>
+    </article>
+
+    <div class="post-content">
+<h2>引言</h2>
+<p>今天的 AI 新闻呈现出一个清晰的主线：从“更强的模型”迈向“可落地的代理生态”。一端是 Cloudflare 让大模型跑在 Workers AI 上、Kimi K2.5 率先上云边统一执行；另一端是围绕代理（Agent）的安全、运行、发现与评测工具密集涌现。资本与政策层面也在同步发力：贝索斯筹建千亿美金制造业 AI 基金，印度 IT 暂未被颠覆，开发者对数据与训练条款的敏感度持续升高。我们或许正在跨入“AI 应用可规模化复制”的新阶段。</p>
+<h2>云边一体的模型托管：代理的“电力公司”</h2>
+<p>Cloudflare 宣布 Workers AI 支持运行大型模型，首发接入 Kimi K2.5。这一步把“调用一个强模型”变成了“在接近用户的边缘可控地运行智能函数”，对延迟、成本与数据驻留有直接好处。更重要的是，它为“代理执行链”的稳定性与扩展性提供了基础设施入口：从推理到工具调用到持久化，都能在同一执行平面内完成。结合 Cloudflare 的网络与计费优势，这可能催生按请求级别的“代理即服务”，让中小团队也能快速上线复杂任务流。潜在风险是供应商绑定与观测性复杂度上升，工程团队需要在可移植性与性能间做权衡。</p>
+<h2>代理基础设施拼图正在补齐</h2>
+<p>今天我们看到了代理生态的几个关键部件被快速填上：</p>
+<ul>
+<li>安全与隔离：Mittens（Go 沙箱）、COW Fork（零拷贝沙箱克隆）提供低开销的任务隔离；Noscope 的 AI 渗透测试把“AI 安全对抗”产品化。</li>
+<li>数据最小权限：PostgreSQL 的 safesession 可将连接强制为只读，专为代理/MCP 设计，减少“过度授权”的事故面。</li>
+<li>能力与集成：RegalMail 给代理一个真实邮箱，打通外部通信；Agent Pilot/AgentReview 让代理可互评与被发现；Hive 尝试把“基准赛”升级为“群体演化”。</li>
+<li>架构范式：Agent-rendered infrastructure 提倡由构建期的 AI 来“渲染”运行时基础设施，减少长驻服务，更多用按需生成与不可变工件。</li>
+</ul>
+<p>这是一套“代理操作系统”的雏形：安全执行层、最小权限数据访问、标准化外设（邮箱/HTTP/队列）、评测与发现市场。对开发者的启示是：别只盯模型参数，尽快搭起“安全-可观测-可替换”的代理运行栈。</p>
+<h2>产业与资本：从云算力到实体制造</h2>
+<p>贝索斯据报寻求 1000 亿美元基金，用 AI 改造制造业。这意味着资金正从“买 GPU”走向“重塑生产系统”，AI 将被嵌入计划、质控、维护与供应链。与之相对，《经济学人》指出印度 IT 尚未被 AI 颠覆：外包业的合同结构、客户采购周期与合规刚性，让快速替换为“AI 一次性交付”的节奏放缓。另一边，Crypto.com 以 AI 为由裁员 12%，显示“效率红利先体现在压缩成本”。Vercel 更新条款默认可用 Hobby 计划代码进行 AI 训练，触发开发者对数据与模型训练边界的再讨论。共识在形成：商业化落地不只拼模型，更拼治理、条款与信任。</p>
+<h2>社会与治理：从道德分歧到公众对话</h2>
+<p>天主教思想家批评五角大楼的 AI 需求违背“人类尊严”，把“如何使用 AI”上升到伦理与人道主义层面。伯尼·桑德斯与 Claude 的对话登上媒体，象征主流政治开始把与 AI 的互动作为公共讨论渠道。与此同时，“别再提 AI”与“AI 写作完全没问题”的两极化心态并存，提醒我们建立清晰的披露与署名规范，避免在效率与真实性之间制造新的不信任。</p>
+<h2>工程实践：别让“还行的”掩盖“更好的”</h2>
+<p>有开发者提醒要有意识地管理 AI 对代码库的影响：评审标准、可追溯性、生成-评测-回退流程必须前置。认知科学的视角也值得参考——模型给出“还行”的答案时，人类往往停止搜索，错过“极好”的方案。工程队应把对比、回测与基准纳入流水线，用自动化评估推动持续改进。另一个基础议题是能源与算力：独立 AI 电网的倡议提示我们，算力密度与电力供给的瓶颈会反向塑造软件架构与部署地理。</p>
+<h2>总结</h2>
+<p>今天的信号很一致：模型能力在边缘可用，代理生态的安全、数据、外设、评测与市场正在成形；产业资本开始把 AI 深植进实体经济；社会与政策在加速设定边界。对团队的行动建议：</p>
+<ul>
+<li>选定可移植的模型执行平面（如 Workers AI），同时规划多云与观测。</li>
+<li>将沙箱、只读会话、审计与渗透测试纳入代理上生产的必选项。</li>
+<li>建立数据与训练条款的透明机制，避免“默认即同意”的灰区。</li>
+<li>用自动化基准与对比测试，防止“满意停止”，持续逼近更优解。</li>
+</ul>
+<p>当“可用”变成“可运维、可治理、可规模化”，代理的真正红利才会到来。</p>
+<p>参考来源：</p>
+<ul>
+<li>https://blog.cloudflare.com/workers-ai-large-models/</li>
+<li>https://gumeo.github.io/post/agent-rendered-infrastructure/</li>
+<li>https://github.com/oug-t/mittens</li>
+<li>https://multikernel.io/2026/03/19/sandlock-cow-fork/</li>
+<li>https://github.com/danolivo/safesession</li>
+<li>https://alvento.ltd/email-plugin/</li>
+<li>https://agentreview.io</li>
+<li>https://hive.rllm-project.com/</li>
+<li>https://www.wsj.com/tech/jeff-bezos-aims-to-raise-100-billion-to-buy-revamp-manufacturing-firms-with-ai-618a3cfe</li>
+<li>https://www.economist.com/business/2026/03/19/why-ai-has-not-yet-upset-indias-it-industry</li>
+<li>https://www.cnbc.com/2026/03/19/crypto-com-layoffs-12percent-ai-job-loss.html</li>
+<li>https://vercel.com/changelog/updates-to-terms-of-service-march-2026</li>
+<li>https://www.washingtonpost.com/nation/2026/03/19/anthropic-war-ai-catholic-church/</li>
+<li>https://thegrahams.au/blog/testing-the-theory</li>
+<li>https://aicode.swerdlow.dev</li>
+<li>https://amppublic.com/</li>
+<li>https://www.noscope.com/</li>
+<li>https://www.youtube.com/watch?v=h3AtWdeu_G0</li>
+</ul>
+    </div>
+
+    <nav class="post-nav">
+      <a href="../archive.html" class="prev">
+        <div class="post-nav-label">← 查看归档</div>
+        <div class="post-nav-title">更多文章</div>
+      </a>
+    </nav>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="../index.html">首页</a>
+          <a href="../archive.html">归档</a>
+          <a href="../about.html">关于</a>
+        </div>
+        <p class="footer-copyright">&copy; 2026 Lium. Built with GitHub Pages.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
